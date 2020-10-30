@@ -3,7 +3,6 @@ using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Strategist.UI
 {
@@ -13,11 +12,9 @@ namespace Strategist.UI
     public partial class MainWindow : Window
     {
         private int columnsSelected;
-        private Brush thresoldTextBoxDefaultBorderBrush;
 
-        public Matrix<float> Matrix { get; private set; }
+        public Matrix Matrix { get; private set; }
         public DataTable MatrixAsDataTable { get; private set; }
-        public float? Threshold { get; set; } = 0.9f;
 
         public MainWindow()
         {
@@ -32,7 +29,7 @@ namespace Strategist.UI
         /// </summary>
         private void GenerateRandomMatrix()
         {
-            Matrix = new Matrix<float>(8, 8);
+            Matrix = new Matrix(8, 8);
             var rnd = new Random();
 
             Matrix.Columns.Fill((i) => new MatrixColumnRowData
@@ -153,7 +150,7 @@ namespace Strategist.UI
         /// </summary>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Threshold is null)
+            if (!double.TryParse(thresholdTextBox.Text.Replace('.', ','), out double val) || val < 0f || val > 1f)
             {
                 MessageBox.Show("Неверный формат данных для минимальной вероятности защиты",
                                 "Ошибка",
@@ -178,29 +175,6 @@ namespace Strategist.UI
                 return;
             }
             MessageBox.Show("ok"); // TODO: Write actual code
-        }
-
-        /// <summary>
-        /// Checks if text in ThresholdTextBox can be pasrsed into float and if it is in the required range
-        /// </summary>
-        private void ThresholdTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            // TODO: Consider creating deparate control for this
-            var tb = (TextBox)sender;
-            if (thresoldTextBoxDefaultBorderBrush is null)
-            {
-                thresoldTextBoxDefaultBorderBrush = tb.BorderBrush;
-            }
-            if (float.TryParse(tb.Text.Replace('.', ','), out float val) && 0f <= val && val <= 1f)
-            {
-                tb.BorderBrush = thresoldTextBoxDefaultBorderBrush;
-                Threshold = val;
-            }
-            else
-            {
-                tb.BorderBrush = Brushes.Red;
-                Threshold = null;
-            }
         }
     }
 }
