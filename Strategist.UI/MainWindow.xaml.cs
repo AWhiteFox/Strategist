@@ -31,22 +31,22 @@ namespace Strategist.UI
         /// </summary>
         private void GenerateCheckBoxes()
         {
-            for (int i = 0; i < matrix.Columns; i++)
+            for (int i = 0; i < matrix.Columns.Length; i++)
             {
                 var cb = new CheckBox
                 {
-                    Content = matrix.ColumnHeaders[i],
+                    Content = matrix.Columns[i].Header,
                     Tag = i,
                     IsChecked = true
                 };
                 cb.Click += ColumnCheckBox_Click;
                 columnStackPanel.Children.Add(cb);
             }
-            for (int i = 0; i < matrix.Rows; i++)
+            for (int i = 0; i < matrix.Rows.Length; i++)
             {
                 var cb = new CheckBox
                 {
-                    Content = matrix.RowHeaders[i],
+                    Content = matrix.Rows[i].Header,
                     Tag = i,
                     IsChecked = true
                 };
@@ -62,15 +62,15 @@ namespace Strategist.UI
         {
             MatrixAsDataTable = new DataTable();
             MatrixAsDataTable.Columns.Add("Средство защиты", typeof(string));
-            for (int i = 0; i < matrix.Columns; i++)
+            for (int i = 0; i < matrix.Columns.Length; i++)
             {
-                MatrixAsDataTable.Columns.Add(matrix.ColumnHeaders[i], typeof(float));
+                MatrixAsDataTable.Columns.Add(matrix.Columns[i].Header, typeof(float));
             }
-            for (int j = 0; j < matrix.Rows; j++)
+            for (int j = 0; j < matrix.Rows.Length; j++)
             {
                 LoadRow(j);
             }
-            columnsSelected = matrix.Columns;
+            columnsSelected = matrix.Columns.Length;
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace Strategist.UI
         private void LoadRow(int rowIndex)
         {
             DataRow row = MatrixAsDataTable.NewRow();
-            row[0] = matrix.RowHeaders[rowIndex];
-            for (int i = 0; i < matrix.Columns; i++)
+            row[0] = matrix.Rows[rowIndex].Header;
+            for (int i = 0; i < matrix.Columns.Length; i++)
             {
                 row[i + 1] = matrix.Values[i, rowIndex];
             }
@@ -138,7 +138,7 @@ namespace Strategist.UI
             {
                 for (int j = 0; j < dataGrid.Items.Count; j++)
                 {
-                    if ((string)MatrixAsDataTable.Rows[j][0] == matrix.RowHeaders[i])
+                    if ((string)MatrixAsDataTable.Rows[j][0] == matrix.Rows[i].Header)
                     {
                         MatrixAsDataTable.Rows.RemoveAt(j);
                         break;

@@ -4,22 +4,17 @@ namespace Strategist.UI  // TODO: Move to different project
 {
     public class Matrix
     {
-        public int Columns { get; }
+        public MatrixColumnRowData[] Columns { get; }
 
-        public int Rows { get; }
-        
-        public string[] ColumnHeaders { get; }
-
-        public string[] RowHeaders { get; }
+        public MatrixColumnRowData[] Rows { get; }
 
         public float[,] Values { get; }
 
         public Matrix(int ccount, int rcount)
         {
-            Columns = ccount;
-            Rows = rcount;
-            ColumnHeaders = new string[ccount];
-            RowHeaders = new string[rcount];
+            Columns = new MatrixColumnRowData[ccount];   
+            Rows = new MatrixColumnRowData[rcount];
+            
             Values = new float[ccount, rcount];
         }
 
@@ -28,14 +23,16 @@ namespace Strategist.UI  // TODO: Move to different project
             var m = new Matrix(ccount, rcount);
             var rnd = new Random();
 
-            for (int i = 0; i < ccount; i++)
+            m.Columns.Fill((i) => new MatrixColumnRowData 
+            { 
+                Header = $"Угроза {i}",
+                Enabled = true 
+            });
+            m.Rows.Fill((i) => new MatrixColumnRowData
             {
-                m.ColumnHeaders[i] = $"Угроза {i}";
-            }
-            for (int i = 0; i < rcount; i++)
-            {
-                m.RowHeaders[i] = $"Средство защиты {i}";
-            }
+                Header = $"Средство защиты {i}",
+                Enabled = true
+            });
 
             for (int j = 0; j < rcount; j++)
             {
