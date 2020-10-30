@@ -24,26 +24,30 @@
             </Grid.RowDefinitions>
 
             <Label x:Name="label" Grid.Row="0" Content="Список угроз: "/>
-            <Border Grid.Row="1"
-                    BorderThickness="1" 
-                    BorderBrush="Gray">
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical"
-                                x:Name="columnStackPanel"
-                                Background="WhiteSmoke"/>
-                </ScrollViewer>
-            </Border>
+            <ListBox Grid.Row="1"
+                     ItemsSource="{Binding Matrix.Columns}"
+                     Background="WhiteSmoke">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Header}" 
+                                  IsChecked="{Binding Enabled}"
+                                  Click="ColumnCheckBox_Click"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <Label Grid.Row="2" Content="Список средств защиты: "/>
-            <Border Grid.Row="3" 
-                    BorderThickness="1" 
-                    BorderBrush="Gray">
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical"
-                                x:Name="rowStackPanel"
-                                Background="WhiteSmoke"/>
-                </ScrollViewer>
-            </Border>
+            <ListBox Grid.Row="3"
+                     ItemsSource="{Binding Matrix.Rows}"
+                     Background="WhiteSmoke">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding Header}" 
+                                  IsChecked="{Binding Enabled}"
+                                  Click="RowCheckBox_Click"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
 
         <!-- Right Side -->

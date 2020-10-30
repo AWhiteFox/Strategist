@@ -1,9 +1,28 @@
 ﻿namespace Strategist.UI
 {
-    public class MatrixColumnRowData
+    public class MatrixColumnRowData : NotifyPropertyChangedBase
     {
-        public string Header { get; set; }
+        private string header;
+        private bool enabled;
 
-        public bool Enabled { get; set; }
+        public string Header
+        {
+            get => header;
+            set
+            {
+                header = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                enabled = value;
+                NotifyPropertyChanged();
+            }
+        }
     }
 }

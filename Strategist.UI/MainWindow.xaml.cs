@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,48 +11,46 @@ namespace Strategist.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Matrix matrix = Matrix.Random(8, 8);
         private int columnsSelected;
         private Brush thresoldTextBoxDefaultBorderBrush;
 
-        public float? Threshold { get; set; } = 0.9f;
+        public Matrix<float> Matrix { get; private set; }
         public DataTable MatrixAsDataTable { get; private set; }
+        public float? Threshold { get; set; } = 0.9f;
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-
+            GenerateRandomMatrix();
             LoadDataTable();
-            GenerateCheckBoxes();
         }
 
         /// <summary>
-        /// Generates <see cref="CheckBox"/>es for enabling and didabling columns and rows
+        /// Fills <see cref="Matrix"/> with random values
         /// </summary>
-        private void GenerateCheckBoxes()
+        private void GenerateRandomMatrix()
         {
-            for (int i = 0; i < matrix.Columns.Length; i++)
+            Matrix = new Matrix<float>(8, 8);
+            var rnd = new Random();
+
+            Matrix.Columns.Fill((i) => new MatrixColumnRowData
             {
-                var cb = new CheckBox
-                {
-                    Content = matrix.Columns[i].Header,
-                    Tag = i,
-                    IsChecked = true
-                };
-                cb.Click += ColumnCheckBox_Click;
-                columnStackPanel.Children.Add(cb);
-            }
-            for (int i = 0; i < matrix.Rows.Length; i++)
+                Header = $"Угроза {i}",
+                Enabled = true
+            });
+            Matrix.Rows.Fill((i) => new MatrixColumnRowData
             {
-                var cb = new CheckBox
+                Header = $"Средство защиты {i}",
+                Enabled = true
+            });
+
+            for (int j = 0; j < Matrix.Rows.Length; j++)
+            {
+                for (int i = 0; i < Matrix.Columns.Length; i++)
                 {
-                    Content = matrix.Rows[i].Header,
-                    Tag = i,
-                    IsChecked = true
-                };
-                cb.Click += RowCheckBox_Click;
-                rowStackPanel.Children.Add(cb);
+                    Matrix.Values[i, j] = (float)Math.Round(rnd.NextDouble(), 2);
+                }
             }
         }
 
@@ -62,15 +61,15 @@ namespace Strategist.UI
         {
             MatrixAsDataTable = new DataTable();
             MatrixAsDataTable.Columns.Add("Средство защиты", typeof(string));
-            for (int i = 0; i < matrix.Columns.Length; i++)
+            for (int i = 0; i < Matrix.Columns.Length; i++)
             {
-                MatrixAsDataTable.Columns.Add(matrix.Columns[i].Header, typeof(float));
+                MatrixAsDataTable.Columns.Add(Matrix.Columns[i].Header, typeof(float));
             }
-            for (int j = 0; j < matrix.Rows.Length; j++)
+            for (int j = 0; j < Matrix.Rows.Length; j++)
             {
                 LoadRow(j);
             }
-            columnsSelected = matrix.Columns.Length;
+            columnsSelected = Matrix.Columns.Length;
         }
 
         /// <summary>
@@ -80,10 +79,10 @@ namespace Strategist.UI
         private void LoadRow(int rowIndex)
         {
             DataRow row = MatrixAsDataTable.NewRow();
-            row[0] = matrix.Rows[rowIndex].Header;
-            for (int i = 0; i < matrix.Columns.Length; i++)
+            row[0] = Matrix.Rows[rowIndex].Header;
+            for (int i = 0; i < Matrix.Columns.Length; i++)
             {
-                row[i + 1] = matrix.Values[i, rowIndex];
+                row[i + 1] = Matrix.Values[i, rowIndex];
             }
             MatrixAsDataTable.Rows.Add(row);
         }
@@ -103,7 +102,8 @@ namespace Strategist.UI
         private void ColumnCheckBox_Click(object sender, RoutedEventArgs e)
         {
             var cb = (CheckBox)sender;
-            int i = (int)cb.Tag + 1;
+            var header = (string)cb.Content;
+            int i = Matrix.Columns.FindIndex(x => x.Header == header) + 1;
             if (cb.IsChecked.Value)
             {
                 if (dataGrid.Columns[i].Visibility != Visibility.Visible)
@@ -128,17 +128,17 @@ namespace Strategist.UI
         private void RowCheckBox_Click(object sender, RoutedEventArgs e)
         {
             var cb = (CheckBox)sender;
-            int i = (int)cb.Tag;
+            var header = (string)cb.Content;
 
             if (cb.IsChecked.Value)
             {
-                LoadRow(i);
+                LoadRow(Matrix.Rows.FindIndex(x => x.Header == header));
             }
             else
             {
                 for (int j = 0; j < dataGrid.Items.Count; j++)
                 {
-                    if ((string)MatrixAsDataTable.Rows[j][0] == matrix.Rows[i].Header)
+                    if ((string)MatrixAsDataTable.Rows[j][0] == header)
                     {
                         MatrixAsDataTable.Rows.RemoveAt(j);
                         break;
