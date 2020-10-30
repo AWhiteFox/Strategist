@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Strategist.UI
+namespace Strategist.Core
 {
     public abstract class NotifyPropertyChangedBase : INotifyPropertyChanged
     {

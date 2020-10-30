@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Strategist.UI
+namespace Strategist.Core
 {
-    internal static class ArrayExtensions
+    public static class ArrayExtensions
     {
         public static void Fill<T>(this T[] array, Func<int, T> func)
         {

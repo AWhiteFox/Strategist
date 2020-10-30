@@ -1,4 +1,4 @@
-﻿namespace Strategist.UI
+﻿namespace Strategist.Core
 {
     public class MatrixColumnRowData : NotifyPropertyChangedBase
     {

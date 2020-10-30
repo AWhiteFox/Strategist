@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Strategist.UI  // TODO: Move to different project
+﻿namespace Strategist.Core  // TODO: Move to different project
 {
     public class Matrix<T>
     {
@@ -12,7 +10,7 @@ namespace Strategist.UI  // TODO: Move to different project
 
         public Matrix(int ccount, int rcount)
         {
-            Columns = new MatrixColumnRowData[ccount];   
+            Columns = new MatrixColumnRowData[ccount];
             Rows = new MatrixColumnRowData[rcount];
             Values = new T[ccount, rcount];
         }
