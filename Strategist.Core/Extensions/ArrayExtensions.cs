@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Strategist.Core
+namespace Strategist.Core.Extensions
 {
     public static class ArrayExtensions
     {

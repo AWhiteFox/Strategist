@@ -1,4 +1,4 @@
-﻿namespace Strategist.Core  // TODO: Move to different project
+﻿namespace Strategist.Core
 {
     public class Matrix
     {

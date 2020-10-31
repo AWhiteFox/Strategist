@@ -1,4 +1,5 @@
 ﻿using Strategist.Core;
+using Strategist.Core.Extensions;
 using System;
 using System.Data;
 using System.Windows;
