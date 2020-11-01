@@ -41,10 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixColumnRowData.cs" />
-    <Compile Include="NotifyPropertyChangedBase.cs" />
+    <Compile Include="Abstractions\NotifyPropertyChangedBase.cs" />
+    <Compile Include="MatrixMath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

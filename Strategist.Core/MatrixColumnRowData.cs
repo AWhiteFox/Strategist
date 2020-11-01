@@ -1,4 +1,6 @@
-﻿namespace Strategist.Core
+﻿using Strategist.Core.Abstractions;
+
+namespace Strategist.Core
 {
     public class MatrixColumnRowData : NotifyPropertyChangedBase
     {

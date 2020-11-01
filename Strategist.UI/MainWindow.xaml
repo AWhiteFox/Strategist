@@ -10,7 +10,7 @@
         Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" MaxWidth="250"/>
             <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         
@@ -23,7 +23,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label x:Name="label" Grid.Row="0" Content="Список угроз: "/>
+            <Label Grid.Row="0" Content="Список средств защиты:"/>
             <ListBox Grid.Row="1"
                      ItemsSource="{Binding Matrix.Columns}"
                      Background="WhiteSmoke">
@@ -36,7 +36,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Label Grid.Row="2" Content="Список средств защиты: "/>
+            <Label Grid.Row="2" Content="Список угроз:"/>
             <ListBox Grid.Row="3"
                      ItemsSource="{Binding Matrix.Rows}"
                      Background="WhiteSmoke">
@@ -67,22 +67,29 @@
                       Margin="0,0,0,5" 
                       HeadersVisibility="Column">
             </DataGrid>
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Content="Минимальная вероятность защиты:"/>
-                <TextBox Grid.Column="1"
+            <StackPanel Grid.Row="1" 
+                        Orientation="Vertical">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Минимальная вероятность защиты:"/>
+                    <TextBox Grid.Column="1"
                          x:Name="thresholdTextBox"
                          Padding="0 4 0 0"/>
-                <Button Grid.Column="2"
+                    <Button Grid.Column="2"
                         Content="Рассчитать"
                         Margin="5,0,0,0"
                         Padding="10 0"
-                        Click="Button_Click"/>
-            </Grid>
+                        Click="ButtonProbability_Click"/>
+                </Grid>
+                <Button Content="Найти науличшее решение"
+                        Margin="0,5,0,0"
+                        Padding="0 4"
+                        Click="ButtonBest_Click"/>
+            </StackPanel>
         </Grid>
 
     </Grid>
