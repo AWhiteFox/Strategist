@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Strategist.Core
 {
@@ -14,7 +13,7 @@ namespace Strategist.Core
         {
             var vals = m.Values;
             var best = new int[vals.GetLength(1)];
-            var max = new double[vals.GetLength(1)];  
+            var max = new double[vals.GetLength(1)];
 
             for (int i = 0; i < vals.GetLength(0); i++)
             {
@@ -31,7 +30,15 @@ namespace Strategist.Core
                 }
             }
 
-            return best.Distinct().ToList();
+            var results = new List<int>();
+            for (int i = 0; i < vals.GetLength(1); i++)
+            {
+                if (m.Rows[i].Enabled && !results.Contains(best[i]))
+                {
+                    results.Add(best[i]);
+                }
+            }
+            return results;
         }
 
         /// <summary>
@@ -66,7 +73,7 @@ namespace Strategist.Core
                 {
                     if (results.Contains(i))
                         continue;
-                    
+
                     int p = 0;
                     for (int j = 0; j < m.Rows.Length; j++)
                     {
