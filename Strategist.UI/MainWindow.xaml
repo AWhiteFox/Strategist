@@ -20,7 +20,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0" Content="Список средств защиты:"/>
@@ -35,9 +37,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Button Grid.Row="2" 
+                    Content="Все"
+                    Padding="0 4"
+                    Margin="0,1,0,0"
+                    Click="ButtonAllColumns_Click"/>
 
-            <Label Grid.Row="2" Content="Список угроз:"/>
-            <ListBox Grid.Row="3"
+            <Label Grid.Row="3" Content="Список угроз:"/>
+            <ListBox Grid.Row="4"
                      ItemsSource="{Binding Matrix.Rows}"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
@@ -48,6 +55,11 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Button Grid.Row="5" 
+                    Content="Все"
+                    Padding="0 4"
+                    Margin="0,1,0,0"
+                    Click="ButtonAllRows_Click"/>
         </Grid>
 
         <!-- Right Side -->
@@ -80,7 +92,7 @@
                          x:Name="thresholdTextBox"
                          Padding="0 4 0 0"/>
                     <Button Grid.Column="2"
-                        Content="Рассчитать"
+                        Content="Найти"
                         Margin="5,0,0,0"
                         Padding="10 0"
                         Click="ButtonProbability_Click"/>

@@ -31,7 +31,7 @@ namespace Strategist.UI
 
         private void GenerateRandomMatrix()
         {
-            Matrix = new Matrix(4, 4);
+            Matrix = new Matrix(6, 6);
             var rnd = new Random();
 
             Matrix.Columns.Fill((i) => new MatrixColumnRowData
@@ -190,6 +190,28 @@ namespace Strategist.UI
         {
             if (CheckSelection())
                 ShowSolutions(MatrixMath.FindBest(Matrix));
+        }
+
+        private void ButtonAllColumns_Click(object sender, RoutedEventArgs e)
+        {
+            var value = !Matrix.Columns[0].Enabled;
+            for (int i = Matrix.Columns.Length - 1; i >= 0; i--)
+            {
+                var col = Matrix.Columns[i];
+                col.Enabled = value;
+                SetColumnVisibility(col.Header, value);
+            }
+        }
+
+        private void ButtonAllRows_Click(object sender, RoutedEventArgs e)
+        {
+            var value = !Matrix.Rows[0].Enabled;
+            for (int i = Matrix.Rows.Length - 1; i >= 0; i--)
+            {
+                var row = Matrix.Rows[i];
+                row.Enabled = value;
+                SetRowVisibility(row.Header, value);
+            }
         }
     }
 }
