@@ -9,7 +9,7 @@ namespace Strategist.Core
         /// </summary>
         /// <param name="m">A matrix</param>
         /// <returns>List of strategies</returns>
-        public static List<int> FindBest(Matrix m, bool skipDisabledColumns = true)
+        public static List<int> FindBest(Matrix m)
         {
             var vals = m.Values;
             var best = new int[vals.GetLength(1)];
@@ -17,7 +17,7 @@ namespace Strategist.Core
 
             for (int i = 0; i < vals.GetLength(0); i++)
             {
-                if (skipDisabledColumns && !m.Columns[i].Enabled)
+                if (!m.Columns[i].Enabled)
                     continue;
 
                 for (int j = 0; j < vals.GetLength(1); j++)
