@@ -1,10 +1,11 @@
 ﻿using Strategist.Core;
-using Strategist.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Matrix = Strategist.Core.Matrix;
 
 namespace Strategist.UI
@@ -14,8 +15,6 @@ namespace Strategist.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int columnsSelected;
-
         public Matrix Matrix { get; private set; }
         public DataTable MatrixAsDataTable { get; private set; }
 
@@ -23,66 +22,34 @@ namespace Strategist.UI
         {
             InitializeComponent();
             DataContext = this;
-            GenerateRandomMatrix();
-            LoadDataTable();
+            Matrix = Matrix.GetRandom();
+            PopulateDataGrid();
         }
 
         // Private Methods //
 
-        private void GenerateRandomMatrix()
+        private void PopulateDataGrid()
         {
-            Matrix = new Matrix(6, 6);
-            var rnd = new Random();
-
-            Matrix.Columns.Fill((i) => new MatrixColumnRowData
+            for (int i = 0; i < Matrix.ColumnHeaders.Length; i++)
             {
-                Header = $"Средство {i}",
-                Enabled = true
-            });
-            Matrix.Rows.Fill((i) => new MatrixColumnRowData
-            {
-                Header = $"Угроза {i}",
-                Enabled = true
-            });
-
-            for (int j = 0; j < Matrix.Rows.Length; j++)
-            {
-                for (int i = 0; i < Matrix.Columns.Length; i++)
+                var col = new DataGridTextColumn
                 {
-                    Matrix.Values[i, j] = (float)Math.Round(rnd.NextDouble(), 2);
-                }
+                    Header = Matrix.ColumnHeaders[i].Title,
+                    Binding = new Binding($"[{i}]")
+                };
+                BindingOperations.SetBinding(col, DataGridTextColumn.VisibilityProperty, new Binding
+                {
+                    Path = new PropertyPath($"Enabled"),
+                    Source = Matrix.ColumnHeaders[i],
+                    Converter = (IValueConverter)this.Resources["BooleanToVisibilityConverter"],
+                });
+                dataGrid.Columns.Add(col);
             }
-        }
-
-        private void LoadDataTable()
-        {
-            MatrixAsDataTable = new DataTable();
-            MatrixAsDataTable.Columns.Add("Угроза", typeof(string));
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                MatrixAsDataTable.Columns.Add(Matrix.Columns[i].Header, typeof(float));
-            }
-            for (int j = 0; j < Matrix.Rows.Length; j++)
-            {
-                LoadRow(j);
-            }
-            columnsSelected = Matrix.Columns.Length;
-        }
-
-        private void LoadRow(int rowIndex)
-        {
-            DataRow row = MatrixAsDataTable.NewRow();
-            row[0] = Matrix.Rows[rowIndex].Header;
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                row[i + 1] = Matrix.Values[i, rowIndex];
-            }
-            MatrixAsDataTable.Rows.Add(row);
         }
 
         private bool CheckSelection()
         {
-            if (columnsSelected == 0)
+            if (Matrix.ColumnHeaders.Count(x => x.Enabled) == 0)
             {
                 ShowError("Выберите хотя бы одно средство защиты");
                 return false;
@@ -95,53 +62,17 @@ namespace Strategist.UI
             return true;
         }
 
-        private void SetColumnVisibility(string header, bool visible)
-        {
-            int i = Matrix.Columns.FindIndex(x => x.Header == header) + 1;
-            if (visible)
-            {
-                if (dataGrid.Columns[i].Visibility != Visibility.Visible)
-                {
-                    dataGrid.Columns[i].Visibility = Visibility.Visible;
-                    columnsSelected++;
-                }
-            }
-            else
-            {
-                if (dataGrid.Columns[i].Visibility == Visibility.Visible)
-                {
-                    dataGrid.Columns[i].Visibility = Visibility.Collapsed;
-                    columnsSelected--;
-                }
-            }
-        }
-
-        private void SetRowVisibility(string header, bool visible)
-        {
-            for (int j = 0; j < dataGrid.Items.Count; j++)
-            {
-                if ((string)MatrixAsDataTable.Rows[j][0] == header)
-                {
-                    if (!visible)
-                    {
-                        MatrixAsDataTable.Rows.RemoveAt(j);
-                    }
-                    return;
-                }
-            }
-            LoadRow(Matrix.Rows.FindIndex(x => x.Header == header));
-        }
-
         private void ShowSolutions(List<int> solutions)
         {
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                var col = Matrix.Columns[i];
-                bool b = solutions.Contains(i);
+            throw new NotImplementedException();
+            //for (int i = 0; i < Matrix.Columns.Length; i++)
+            //{
+            //    var col = Matrix.Columns[i];
+            //    bool b = solutions.Contains(i);
 
-                col.Enabled = b;
-                SetColumnVisibility(col.Header, b);
-            }
+            //    col.Enabled = b;
+            //    SetColumnVisibility(col.Header, b);
+            //}
         }
 
         private void ShowError(string content)
@@ -150,24 +81,6 @@ namespace Strategist.UI
         }
 
         // UI Events //
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            dataGrid.Columns[0].Width = DataGridLength.Auto;
-            MatrixAsDataTable.DefaultView.Sort = MatrixAsDataTable.Columns[0].ColumnName;
-        }
-
-        private void ColumnCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            SetColumnVisibility((string)cb.Content, cb.IsChecked.Value);
-        }
-
-        private void RowCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            SetRowVisibility((string)cb.Content, cb.IsChecked.Value);
-        }
 
         private void ButtonProbability_Click(object sender, RoutedEventArgs e)
         {
@@ -194,23 +107,19 @@ namespace Strategist.UI
 
         private void ButtonAllColumns_Click(object sender, RoutedEventArgs e)
         {
-            var value = !Matrix.Columns[0].Enabled;
-            for (int i = Matrix.Columns.Length - 1; i >= 0; i--)
+            var value = !Matrix.ColumnHeaders[0].Enabled;
+            for (int i = Matrix.ColumnHeaders.Length - 1; i >= 0; i--)
             {
-                var col = Matrix.Columns[i];
-                col.Enabled = value;
-                SetColumnVisibility(col.Header, value);
+                Matrix.ColumnHeaders[i].Enabled = value;
             }
         }
 
         private void ButtonAllRows_Click(object sender, RoutedEventArgs e)
         {
-            var value = !Matrix.Rows[0].Enabled;
-            for (int i = Matrix.Rows.Length - 1; i >= 0; i--)
+            var value = !Matrix.RowHeaders[0].Enabled;
+            for (int i = Matrix.RowHeaders.Length - 1; i >= 0; i--)
             {
-                var row = Matrix.Rows[i];
-                row.Enabled = value;
-                SetRowVisibility(row.Header, value);
+                Matrix.RowHeaders[i].Enabled = value;
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Strategist.Core
 {
@@ -9,6 +10,7 @@ namespace Strategist.Core
         /// </summary>
         /// <param name="m">A matrix</param>
         /// <returns>List of strategies</returns>
+        [Obsolete]
         public static List<int> FindBest(Matrix m)
         {
             var vals = m.Values;
@@ -17,7 +19,7 @@ namespace Strategist.Core
 
             for (int i = 0; i < vals.GetLength(0); i++)
             {
-                if (!m.Columns[i].Enabled)
+                if (!m.ColumnHeaders[i].Enabled)
                     continue;
 
                 for (int j = 0; j < vals.GetLength(1); j++)
@@ -48,6 +50,7 @@ namespace Strategist.Core
         /// <param name="value">Minimal probability of protection</param>
         /// <param name="results">Best strategies</param>
         /// <returns>True if solution exists</returns>
+        [Obsolete]
         public static bool TryFindByProbability(Matrix m, double value, out List<int> results)
         {
             var vals = m.Values;
@@ -69,7 +72,7 @@ namespace Strategist.Core
             {
                 int max_val = 0;
                 int max_i = -1;
-                for (int i = 0; i < m.Columns.Length; i++)
+                for (int i = 0; i < m.ColumnHeaders.Length; i++)
                 {
                     if (results.Contains(i))
                         continue;
