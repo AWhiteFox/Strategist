@@ -1,116 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Strategist.Core
+﻿namespace Strategist.Core
 {
     public static class MatrixMath
     {
         /// <summary>
-        /// Finds minimal set of best strategies for enabled rows and columns
+        /// Finds best row by average value
         /// </summary>
-        /// <param name="m">A matrix</param>
-        /// <returns>List of strategies</returns>
-        [Obsolete]
-        public static List<int> FindBest(Matrix m)
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static MatrixRow FindBestByAverage(Matrix m)
         {
-            var vals = m.Values;
-            var best = new int[vals.GetLength(1)];
-            var max = new double[vals.GetLength(1)];
+            MatrixRow result = null;
+            double best = 0;
 
-            for (int i = 0; i < vals.GetLength(0); i++)
+            for (int j = 0; j < m.Values.GetLength(1); j++)
             {
-                if (!m.ColumnHeaders[i].Enabled)
+                if (!m.Rows[j].Enabled)
                     continue;
 
-                for (int j = 0; j < vals.GetLength(1); j++)
+                double sum = 0;
+                for (int i = 0; i < m.Values.GetLength(0); i++)
                 {
-                    if (m.Rows[j].Enabled && vals[i, j] > max[j])
+                    if (m.ColumnHeaders[i].Enabled)
                     {
-                        max[j] = vals[i, j];
-                        best[j] = i;
+                        sum += m.Values[i, j];
                     }
+                }
+
+                if (sum > best)
+                {
+                    best = sum;
+                    result = m.Rows[j];
                 }
             }
 
-            var results = new List<int>();
-            for (int i = 0; i < vals.GetLength(1); i++)
-            {
-                if (m.Rows[i].Enabled && !results.Contains(best[i]))
-                {
-                    results.Add(best[i]);
-                }
-            }
-            return results;
+            return result;
         }
 
         /// <summary>
-        /// Tries to find minimal set of strategies that protect with equal or higher probability than provided value
+        /// Finds best strategy by minimal value
         /// </summary>
-        /// <param name="m">A matrix</param>
-        /// <param name="value">Minimal probability of protection</param>
-        /// <param name="results">Best strategies</param>
-        /// <returns>True if solution exists</returns>
-        [Obsolete]
-        public static bool TryFindByProbability(Matrix m, double value, out List<int> results)
+        /// <param name="m"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static MatrixRow FindByProbability(Matrix m, double value)
         {
-            var vals = m.Values;
-            var solvable = true;
-            results = new List<int>();
+            MatrixRow result = null;
+            int best = int.MaxValue;
 
-            var check = new bool[m.Rows.Length];
-            int count = check.Length;
-            for (int i = 0; i < check.Length; i++)
+            for (int j = 0; j < m.Values.GetLength(1); j++)
             {
-                check[i] = !m.Rows[i].Enabled;
-                if (check[i])
+                if (!m.Rows[j].Enabled)
+                    continue;
+
+                bool flag = true;
+                for (int i = 0; i < m.Values.GetLength(0); i++)
                 {
-                    count--;
+                    if (m.ColumnHeaders[i].Enabled && m.Values[i, j] < value)
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if (flag && m.Rows[j].Headers.Length < best)
+                {
+                    best = m.Rows[j].Headers.Length;
+                    result = m.Rows[j];
                 }
             }
 
-            while (count > 0)
-            {
-                int max_val = 0;
-                int max_i = -1;
-                for (int i = 0; i < m.ColumnHeaders.Length; i++)
-                {
-                    if (results.Contains(i))
-                        continue;
-
-                    int p = 0;
-                    for (int j = 0; j < m.Rows.Length; j++)
-                    {
-                        if (!check[j] && vals[i, j] >= value)
-                        {
-                            p++;
-                        }
-                    }
-                    if (p > max_val)
-                    {
-                        max_val = p;
-                        max_i = i;
-                    }
-                }
-
-                if (max_i == -1)
-                {
-                    solvable = false;
-                    break;
-                }
-
-                for (int j = 0; j < m.Rows.Length; j++)
-                {
-                    if (!check[j] && vals[max_i, j] >= value)
-                    {
-                        check[j] = true;
-                        count--;
-                    }
-                }
-
-                results.Add(max_i);
-            }
-
-            return solvable;
+            return result;
         }
     }
 }

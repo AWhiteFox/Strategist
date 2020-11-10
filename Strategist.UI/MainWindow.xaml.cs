@@ -54,7 +54,7 @@ namespace Strategist.UI
                 ShowError("Выберите хотя бы одно средство защиты");
                 return false;
             }
-            if (MatrixAsDataTable.Rows.Count == 0)
+            if (Matrix.Rows.Count(x => x.Enabled) == 0)
             {
                 ShowError("Выберите хотя бы одну угрозу");
                 return false;
@@ -62,17 +62,14 @@ namespace Strategist.UI
             return true;
         }
 
-        private void ShowSolutions(List<int> solutions)
+        private void ShowSolution(MatrixRow solution)
         {
-            throw new NotImplementedException();
-            //for (int i = 0; i < Matrix.Columns.Length; i++)
-            //{
-            //    var col = Matrix.Columns[i];
-            //    bool b = solutions.Contains(i);
-
-            //    col.Enabled = b;
-            //    SetColumnVisibility(col.Header, b);
-            //}
+            if (solution is null)
+            {
+                ShowError("Решение невозможно");
+                return;
+            }
+            MessageBox.Show(solution.FullHeader, "Решение найдено");
         }
 
         private void ShowError(string content)
@@ -89,20 +86,16 @@ namespace Strategist.UI
                 ShowError("Неверный формат данных для минимальной вероятности защиты");
                 return;
             }
-
             if (!CheckSelection())
+            {
                 return;
-
-            if (MatrixMath.TryFindByProbability(Matrix, val, out List<int> results))
-                ShowSolutions(results);
-            else
-                ShowError("Решение невозможно");
+            }
+            ShowSolution(MatrixMath.FindByProbability(Matrix, val));
         }
 
         private void ButtonBest_Click(object sender, RoutedEventArgs e)
         {
-            if (CheckSelection())
-                ShowSolutions(MatrixMath.FindBest(Matrix));
+            ShowSolution(MatrixMath.FindBestByAverage(Matrix));
         }
 
         private void ButtonAllColumns_Click(object sender, RoutedEventArgs e)
