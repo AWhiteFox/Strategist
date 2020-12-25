@@ -1,5 +1,4 @@
-﻿using Strategist.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,59 +6,61 @@ namespace Strategist.Core
 {
     public class Matrix
     {
-        public MatrixHeader[] ColumnHeaders { get; }
+        private readonly List<List<double>> values;
+        private readonly List<MatrixAxis> columns;
+        private readonly List<MatrixAxis> rows;
+        private readonly Dictionary<string, bool> columnTags;
+        private readonly Dictionary<string, bool> rowTags;
 
-        public MatrixHeader[] RowHeaders { get; }
+        public IReadOnlyDictionary<string, bool> ColumnTags => columnTags;
+        public IReadOnlyDictionary<string, bool> RowTags => rowTags;
+        public IReadOnlyList<MatrixAxis> Columns => columns;
+        public IReadOnlyList<MatrixAxis> Rows => rows;
 
-        public MatrixRow[] Rows { get; }
-
-        public double[,] Values { get; }
-
-        public Matrix(string[] columnHeaders, string[] rowHeaders)
+        public double this[int i, int j]
         {
-            int rcount = (int)Math.Pow(2, rowHeaders.Length) - 1;
-
-            ColumnHeaders = columnHeaders.Select(x => new MatrixHeader(x)).ToArray();
-            RowHeaders = rowHeaders.Select(x => new MatrixHeader(x)).ToArray();
-            
-            Rows = new MatrixRow[rcount];
-            Values = new double[columnHeaders.Length, rcount];
+            get => values[j][i];
+            set => values[j][i] = value;
         }
 
-        public void SetRowHeaders(int i, IEnumerable<string> headerTitles)
+        public Matrix()
         {
-            if (i < 0 || i >= Rows.Length)
-                throw new ArgumentOutOfRangeException(nameof(i));
-            
-            MatrixHeader[] headers = headerTitles.Select(x => Array.Find(RowHeaders, y => y.Title == x)).ToArray();
-            Rows[i] = new MatrixRow(this, i, headers);
+            values = new List<List<double>>();
+            columns = new List<MatrixAxis>();
+            rows = new List<MatrixAxis>();
+            columnTags = new Dictionary<string, bool>();
+            rowTags = new Dictionary<string, bool>();
         }
 
-        public static Matrix GetRandom()
-        { 
-            string[] columnHeaders = new string[6];
-            columnHeaders.Fill(i => $"Угроза {i}");
-            string[] rowHeaders = new string[3];
-            rowHeaders.Fill(i => $"Средство {i}");
+        public void SetColumnTagEnabled(string key, bool value) => columnTags[key] = value;
 
-            var rnd = new Random();
-            var m = new Matrix(columnHeaders, rowHeaders);
+        public void SetRowTagEnabled(string key, bool value) => rowTags[key] = value;
 
-            List<List<string>> combinations = rowHeaders.Combinations().ToList();
-            for (int i = 0; i < combinations.Count; i++)
+        public void AddColumn(string[] tags)
+        {
+            AddAxis(columns, tags, columnTags);
+            for (int i = 0; i < values.Count; i++)
             {
-                m.SetRowHeaders(i, combinations[i]);
+                values[i].Add(0.0);
             }
+        }
 
-            for (int j = 0; j < m.Rows.Length; j++)
+        public void AddRow(string[] tags)
+        {
+            AddAxis(rows, tags, rowTags);
+            values.Add(Enumerable.Repeat(0.0, columns.Count).ToList());
+        }
+
+        private static void AddAxis(List<MatrixAxis> axisCollection, string[] tags, Dictionary<string, bool> tagsDict)
+        {
+            for (int i = 0; i < tags.Length; i++)
             {
-                for (int i = 0; i < m.ColumnHeaders.Length; i++)
+                if (!tagsDict.ContainsKey(tags[i]))
                 {
-                    m.Values[i, j] = Math.Round(rnd.NextDouble(), 2);
+                    tagsDict.Add(tags[i], true);
                 }
             }
-
-            return m;
+            axisCollection.Add(new MatrixAxis(tags, tagsDict));
         }
     }
 }

@@ -30,12 +30,12 @@
 
             <Label Grid.Row="0" Content="Список угроз:"/>
             <ListBox Grid.Row="1"
-                     ItemsSource="{Binding Matrix.ColumnHeaders}"
+                     ItemsSource="{Binding Matrix.ColumnTags}"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <CheckBox Content="{Binding Title}" 
-                                  IsChecked="{Binding Enabled}"/>
+                                  IsChecked="{Binding IsEnabled}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -43,16 +43,16 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Click="ButtonAllColumns_Click"/>
+                    Command="{Binding Matrix.SwitchAllColumnTagsCommand}"/>
 
             <Label Grid.Row="3" Content="Список средств защиты:"/>
             <ListBox Grid.Row="4"
-                     ItemsSource="{Binding Matrix.RowHeaders}"
+                     ItemsSource="{Binding Matrix.RowTags}"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <CheckBox Content="{Binding Title}" 
-                                  IsChecked="{Binding Enabled}"/>
+                                  IsChecked="{Binding IsEnabled}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -60,7 +60,7 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Click="ButtonAllRows_Click"/>
+                    Command="{Binding Matrix.SwitchAllRowTagsCommand}"/>
         </Grid>
 
         <!-- Right Side -->
@@ -83,14 +83,14 @@
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Setter Property="Visibility" 
-                                Value="{Binding Item.Enabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                Value="{Binding Item.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Средства защиты" 
-                                        Binding="{Binding FullHeader}"
+                                        Binding="{Binding Header}"
                                         Width="Auto"/>
-                    <!-- Other columns generated in the code behind -->
+                    <!-- Other columns are generated in the code behind -->
                 </DataGrid.Columns>
             </DataGrid>
             <StackPanel Grid.Row="1" 
@@ -108,13 +108,11 @@
                     <Button Grid.Column="2"
                         Content="Найти науличшее решение по минимальному порогу защиты"
                         Margin="5,0,0,0"
-                        Padding="20 0"
-                        Click="ButtonProbability_Click"/>
+                        Padding="20 0"/>
                 </Grid>
                 <Button Content="Найти науличшее решение по средней вероятности"
                         Margin="0,5,0,0"
-                        Padding="0 4"
-                        Click="ButtonBest_Click"/>
+                        Padding="0 4"/>
             </StackPanel>
         </Grid>
 

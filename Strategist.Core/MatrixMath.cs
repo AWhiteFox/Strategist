@@ -1,75 +1,37 @@
-﻿namespace Strategist.Core
+﻿using System;
+
+namespace Strategist.Core
 {
     public static class MatrixMath
     {
-        /// <summary>
-        /// Finds best row by average value
-        /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        public static MatrixRow FindBestByAverage(Matrix m)
+        public static int FindBestRowByMax(Matrix m)
         {
-            MatrixRow result = null;
-            double best = 0;
-
-            for (int j = 0; j < m.Values.GetLength(1); j++)
-            {
-                if (!m.Rows[j].Enabled)
-                    continue;
-
-                double sum = 0;
-                for (int i = 0; i < m.Values.GetLength(0); i++)
-                {
-                    if (m.ColumnHeaders[i].Enabled)
-                    {
-                        sum += m.Values[i, j];
-                    }
-                }
-
-                if (sum > best)
-                {
-                    best = sum;
-                    result = m.Rows[j];
-                }
-            }
-
-            return result;
+            throw new NotImplementedException();  // TODO write actual code
         }
 
-        /// <summary>
-        /// Finds best strategy by minimal value
-        /// </summary>
-        /// <param name="m"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static MatrixRow FindByProbability(Matrix m, double value)
+        public static int FindBestRowByMedian(Matrix m)
         {
-            MatrixRow result = null;
-            int best = int.MaxValue;
+            throw new NotImplementedException();  // TODO write actual code
+        }
 
-            for (int j = 0; j < m.Values.GetLength(1); j++)
-            {
-                if (!m.Rows[j].Enabled)
-                    continue;
+        public static int FindBestRowByMin(Matrix m)
+        {
+            throw new NotImplementedException();  // TODO write actual code
+        }
 
-                bool flag = true;
-                for (int i = 0; i < m.Values.GetLength(0); i++)
-                {
-                    if (m.ColumnHeaders[i].Enabled && m.Values[i, j] < value)
-                    {
-                        flag = false;
-                        break;
-                    }
-                }
+        public static int[] CompleteRowSetByMedian(Matrix m)
+        {
+            throw new NotImplementedException();  // TODO write actual code
+        }
 
-                if (flag && m.Rows[j].Headers.Length < best)
-                {
-                    best = m.Rows[j].Headers.Length;
-                    result = m.Rows[j];
-                }
-            }
+        public static int[] CompleteRowSetByMin(Matrix m)
+        {
+            throw new NotImplementedException();  // TODO write actual code
+        }
 
-            return result;
+        public static double[] MaximumsOfRowSet(Matrix m)
+        {
+            throw new NotImplementedException();  // TODO write actual code
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace Strategist.Core.Abstractions
+namespace Strategist.UI.Abstractions
 {
     public abstract class NotifyPropertyChangedBase : INotifyPropertyChanged
     {
@@ -10,5 +11,7 @@ namespace Strategist.Core.Abstractions
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        protected void NotifyThisPropertyChanged([CallerMemberName] string propertyName = "") => NotifyPropertyChanged(propertyName);
     }
 }
