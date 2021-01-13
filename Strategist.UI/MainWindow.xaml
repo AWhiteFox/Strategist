@@ -44,7 +44,7 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Command="{Binding Matrix.SwitchAllColumnTagsCommand}"/>
+                    Command="{Binding SwitchAllColumnTagsCommand}"/>
 
             <Label Grid.Row="3" Content="Список средств защиты (СЗ):"/>
             <ListBox Grid.Row="4"
@@ -62,7 +62,7 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Command="{Binding Matrix.SwitchAllRowTagsCommand}"/>
+                    Command="{Binding SwitchAllRowTagsCommand}"/>
         </Grid>
 
         <!-- Right Side -->
@@ -109,7 +109,8 @@
                         <RadioButton x:Name="rb_max" Margin="5 0" Content="По максимальному значению" IsChecked="True"/>
                         <RadioButton x:Name="rb_median" Margin="5 0" Content="По медиане"/>
                         <RadioButton x:Name="rb_custom" Margin="5 0" Content="По заданному значению"/>
-                        <TextBox Margin="5" Text="50.0" IsEnabled="{Binding IsChecked, ElementName=rb_custom}"/>
+                        <TextBox x:Name="tb_customThreshold" Margin="5" Text="0.5" 
+                                 IsEnabled="{Binding IsChecked, ElementName=rb_custom}"/>
                     </StackPanel>
                 </Border>
                 <Grid Grid.Column="1" Margin="0,0,0,-5">
@@ -118,9 +119,12 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации СЗ" Margin="0,0,0,5" Padding="0 5"/>
-                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" IsEnabled="False"/>
-                    <Button Grid.Row="2" Content="Оценка выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" IsEnabled="False"/>
+                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            Command="{Binding FindBestRowCommand}"/>
+                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            IsEnabled="False"/>
+                    <Button Grid.Row="2" Content="Оценка выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            IsEnabled="False"/>
                 </Grid>
             </Grid>
         </Grid>
