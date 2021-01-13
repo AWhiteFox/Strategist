@@ -31,6 +31,7 @@
             <Label Grid.Row="0" Content="Список угроз:"/>
             <ListBox Grid.Row="1"
                      ItemsSource="{Binding Matrix.ColumnTags}"
+                     BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -45,9 +46,10 @@
                     Margin="0,5,0,0"
                     Command="{Binding Matrix.SwitchAllColumnTagsCommand}"/>
 
-            <Label Grid.Row="3" Content="Список средств защиты:"/>
+            <Label Grid.Row="3" Content="Список средств защиты (СЗ):"/>
             <ListBox Grid.Row="4"
                      ItemsSource="{Binding Matrix.RowTags}"
+                     BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -87,34 +89,40 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Средства защиты" 
+                    <DataGridTextColumn Header="Средства защиты (СЗ)" 
                                         Binding="{Binding Header}"
                                         Width="Auto"/>
                     <!-- Other columns are generated in the code behind -->
                 </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Row="1" 
-                        Orientation="Vertical">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Content="Минимальный порог защиты:"/>
-                    <TextBox Grid.Column="1"
-                         x:Name="thresholdTextBox"
-                         Padding="0 4 0 0"/>
-                    <Button Grid.Column="2"
-                        Content="Найти науличшее решение по минимальному порогу защиты"
-                        Margin="5,0,0,0"
-                        Padding="20 0"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" 
+                        Margin="0,0,5,0" Padding="5 0" 
+                        BorderBrush="DimGray" BorderThickness="1"
+                        Background="WhiteSmoke">
+                    <StackPanel>
+                        <Label Content="Критерий оценки:"/>
+                        <RadioButton x:Name="rb_max" Margin="5 0" Content="По максимальному значению" IsChecked="True"/>
+                        <RadioButton x:Name="rb_median" Margin="5 0" Content="По медиане"/>
+                        <RadioButton x:Name="rb_custom" Margin="5 0" Content="По заданному значению"/>
+                        <TextBox Margin="5" Text="50.0" IsEnabled="{Binding IsChecked, ElementName=rb_custom}"/>
+                    </StackPanel>
+                </Border>
+                <Grid Grid.Column="1" Margin="0,0,0,-5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации СЗ" Margin="0,0,0,5" Padding="0 5"/>
+                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" IsEnabled="False"/>
+                    <Button Grid.Row="2" Content="Оценка выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" IsEnabled="False"/>
                 </Grid>
-                <Button Content="Найти науличшее решение по средней вероятности"
-                        Margin="0,5,0,0"
-                        Padding="0 4"/>
-            </StackPanel>
+            </Grid>
         </Grid>
-
     </Grid>
 </Window>
