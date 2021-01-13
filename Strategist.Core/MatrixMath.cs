@@ -1,113 +1,101 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Strategist.Core
 {
     public static class MatrixMath
     {
-        /// <summary>
-        /// Finds minimal set of best strategies for enabled rows and columns
-        /// </summary>
-        /// <param name="m">A matrix</param>
-        /// <returns>List of strategies</returns>
-        public static List<int> FindBest(Matrix m)
+        public static int FindBestRow(Matrix matrix, double[] thresholds)
         {
-            var vals = m.Values;
-            var best = new int[vals.GetLength(1)];
-            var max = new double[vals.GetLength(1)];
-
-            for (int i = 0; i < vals.GetLength(0); i++)
+            int best_i = -1;
+            for (int i = 0; i < matrix.Rows.Count; i++)
             {
-                if (!m.Columns[i].Enabled)
+                if (!matrix.Rows[i].IsEnabled)
                     continue;
 
-                for (int j = 0; j < vals.GetLength(1); j++)
+                bool flag = true;
+                for (int j = 0; j < matrix.Columns.Count; j++)
                 {
-                    if (m.Rows[j].Enabled && vals[i, j] > max[j])
-                    {
-                        max[j] = vals[i, j];
-                        best[j] = i;
-                    }
-                }
-            }
-
-            var results = new List<int>();
-            for (int i = 0; i < vals.GetLength(1); i++)
-            {
-                if (m.Rows[i].Enabled && !results.Contains(best[i]))
-                {
-                    results.Add(best[i]);
-                }
-            }
-            return results;
-        }
-
-        /// <summary>
-        /// Tries to find minimal set of strategies that protect with equal or higher probability than provided value
-        /// </summary>
-        /// <param name="m">A matrix</param>
-        /// <param name="value">Minimal probability of protection</param>
-        /// <param name="results">Best strategies</param>
-        /// <returns>True if solution exists</returns>
-        public static bool TryFindByProbability(Matrix m, double value, out List<int> results)
-        {
-            var vals = m.Values;
-            var solvable = true;
-            results = new List<int>();
-
-            var check = new bool[m.Rows.Length];
-            int count = check.Length;
-            for (int i = 0; i < check.Length; i++)
-            {
-                check[i] = !m.Rows[i].Enabled;
-                if (check[i])
-                {
-                    count--;
-                }
-            }
-
-            while (count > 0)
-            {
-                int max_val = 0;
-                int max_i = -1;
-                for (int i = 0; i < m.Columns.Length; i++)
-                {
-                    if (results.Contains(i))
+                    if (!matrix.Columns[j].IsEnabled)
                         continue;
 
-                    int p = 0;
-                    for (int j = 0; j < m.Rows.Length; j++)
+                    if (matrix[j, i] < thresholds[j])
                     {
-                        if (!check[j] && vals[i, j] >= value)
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag && (best_i == -1 || matrix.Rows[i].Tags.Count < matrix.Rows[best_i].Tags.Count))
+                {
+                    best_i = i;
+                }
+            }
+            return best_i;
+        }
+
+        public static int FindBestRow(Matrix matrix, double threshold)
+        {
+            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.Columns.Count).ToArray());
+        }
+
+        public static double[] GetColumnMaximums(Matrix matrix)
+        {
+            double[] maximums = new double[matrix.Columns.Count];
+            for (int i = 0; i < matrix.Columns.Count; i++)
+            {
+                if (matrix.Columns[i].IsEnabled)
+                {
+                    double max = 0;
+                    for (int j = 0; j < matrix.Rows.Count; j++)
+                    {
+                        if (matrix.Rows[j].IsEnabled)
                         {
-                            p++;
+                            max = Math.Max(max, matrix[i, j]);
                         }
                     }
-                    if (p > max_val)
-                    {
-                        max_val = p;
-                        max_i = i;
-                    }
+                    maximums[i] = max;
                 }
-
-                if (max_i == -1)
+                else
                 {
-                    solvable = false;
-                    break;
+                    maximums[i] = -1;
                 }
-
-                for (int j = 0; j < m.Rows.Length; j++)
-                {
-                    if (!check[j] && vals[max_i, j] >= value)
-                    {
-                        check[j] = true;
-                        count--;
-                    }
-                }
-
-                results.Add(max_i);
             }
+            return maximums;
+        }
 
-            return solvable;
+        public static double[] GetColumnMedians(Matrix matrix)
+        {
+            double[] medians = new double[matrix.Columns.Count];
+            List<double> values = new List<double>();
+            for (int i = 0; i < matrix.Columns.Count; i++)
+            {
+                if (matrix.Columns[i].IsEnabled)
+                {
+                    values.Clear();
+                    for (int j = 0; j < matrix.Rows.Count; j++)
+                    {  
+                        if (matrix.Rows[j].IsEnabled)
+                        {
+                            values.Add(matrix[i, j]);
+                        }
+                    }
+                    values.Sort();
+                    if (values.Count % 2 == 0)
+                    {
+                        medians[i] = (values[values.Count / 2 - 1] + values[values.Count / 2]) / 2;
+                    }
+                    else
+                    {
+                        medians[i] = values[values.Count / 2];
+                    }
+                }
+                else
+                {
+                    medians[i] = -1;
+                }
+            }
+            return medians;
         }
     }
 }

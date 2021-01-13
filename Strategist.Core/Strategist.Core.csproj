@@ -43,9 +43,9 @@
   <ItemGroup>
     <Compile Include="Extensions\IListExtensions.cs" />
     <Compile Include="Matrix.cs" />
-    <Compile Include="MatrixColumnRowData.cs" />
-    <Compile Include="Abstractions\NotifyPropertyChangedBase.cs" />
+    <Compile Include="MatrixLoader.cs" />
     <Compile Include="MatrixMath.cs" />
+    <Compile Include="MatrixAxis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

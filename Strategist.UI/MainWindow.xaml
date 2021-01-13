@@ -4,14 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"    
-        Title="MainWindow" 
-        Height="450" Width="800"
-        MinHeight="200" MinWidth="800"
-        Loaded="Window_Loaded">
+        Title="MainWindow"
+        Name="Window"
+        Height="600" Width="1000"
+        MinHeight="200" MinWidth="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="250"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
         <!-- Left Side -->
@@ -25,15 +28,15 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Content="Список средств защиты:"/>
+            <Label Grid.Row="0" Content="Список угроз:"/>
             <ListBox Grid.Row="1"
-                     ItemsSource="{Binding Matrix.Columns}"
+                     ItemsSource="{Binding Matrix.ColumnTags}"
+                     BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox Content="{Binding Header}" 
-                                  IsChecked="{Binding Enabled}"
-                                  Click="ColumnCheckBox_Click"/>
+                        <CheckBox Content="{Binding Title}" 
+                                  IsChecked="{Binding IsEnabled}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -41,17 +44,17 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Click="ButtonAllColumns_Click"/>
+                    Command="{Binding SwitchAllColumnTagsCommand}"/>
 
-            <Label Grid.Row="3" Content="Список угроз:"/>
+            <Label Grid.Row="3" Content="Список средств защиты (СЗ):"/>
             <ListBox Grid.Row="4"
-                     ItemsSource="{Binding Matrix.Rows}"
+                     ItemsSource="{Binding Matrix.RowTags}"
+                     BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox Content="{Binding Header}" 
-                                  IsChecked="{Binding Enabled}"
-                                  Click="RowCheckBox_Click"/>
+                        <CheckBox Content="{Binding Title}" 
+                                  IsChecked="{Binding IsEnabled}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -59,7 +62,7 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Click="ButtonAllRows_Click"/>
+                    Command="{Binding SwitchAllRowTagsCommand}"/>
         </Grid>
 
         <!-- Right Side -->
@@ -75,34 +78,55 @@
                       CanUserResizeColumns="False"
                       CanUserResizeRows="False"
                       CanUserReorderColumns="False"
-                      ItemsSource="{Binding MatrixAsDataTable}" 
+                      ItemsSource="{Binding Matrix.Rows}" 
                       Margin="0,0,0,5" 
-                      HeadersVisibility="Column">
+                      HeadersVisibility="Column"
+                      AutoGenerateColumns="False">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Visibility" 
+                                Value="{Binding Item.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Средства защиты (СЗ)" 
+                                        Binding="{Binding Header}"
+                                        Width="Auto"/>
+                    <!-- Other columns are generated in the code behind -->
+                </DataGrid.Columns>
             </DataGrid>
-            <StackPanel Grid.Row="1" 
-                        Orientation="Vertical">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Content="Минимальная вероятность защиты:"/>
-                    <TextBox Grid.Column="1"
-                         x:Name="thresholdTextBox"
-                         Padding="0 4 0 0"/>
-                    <Button Grid.Column="2"
-                        Content="Найти"
-                        Margin="5,0,0,0"
-                        Padding="10 0"
-                        Click="ButtonProbability_Click"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" 
+                        Margin="0,0,5,0" Padding="5 0" 
+                        BorderBrush="DimGray" BorderThickness="1"
+                        Background="WhiteSmoke">
+                    <StackPanel>
+                        <Label Content="Критерий оценки:"/>
+                        <RadioButton x:Name="rb_max" Margin="5 0" Content="По максимальному значению" IsChecked="True"/>
+                        <RadioButton x:Name="rb_median" Margin="5 0" Content="По медиане"/>
+                        <RadioButton x:Name="rb_custom" Margin="5 0" Content="По заданному значению"/>
+                        <TextBox x:Name="tb_customThreshold" Margin="5" Text="0.5" 
+                                 IsEnabled="{Binding IsChecked, ElementName=rb_custom}"/>
+                    </StackPanel>
+                </Border>
+                <Grid Grid.Column="1" Margin="0,0,0,-5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            Command="{Binding FindBestRowCommand}"/>
+                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            IsEnabled="False"/>
+                    <Button Grid.Row="2" Content="Оценка выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                            IsEnabled="False"/>
                 </Grid>
-                <Button Content="Найти науличшее решение"
-                        Margin="0,5,0,0"
-                        Padding="0 4"
-                        Click="ButtonBest_Click"/>
-            </StackPanel>
+            </Grid>
         </Grid>
-
     </Grid>
 </Window>

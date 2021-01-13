@@ -1,11 +1,7 @@
-﻿using Strategist.Core;
-using Strategist.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using Strategist.UI.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using Matrix = Strategist.Core.Matrix;
+using System.Windows.Data;
 
 namespace Strategist.UI
 {
@@ -14,204 +10,63 @@ namespace Strategist.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int columnsSelected;
+        // Public Properties //
+        
+        public bool MaxThresholdSelected => rb_max.IsChecked.Value;
+        public bool MedianThresholdSelected => rb_median.IsChecked.Value;
+        public bool CustomThresholdSelected => rb_custom.IsChecked.Value;
 
-        public Matrix Matrix { get; private set; }
-        public DataTable MatrixAsDataTable { get; private set; }
+        // Constructor //
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = this;
-            GenerateRandomMatrix();
-            LoadDataTable();
+            DataContext = new MainWindowViewModel(this);
+            InitializeDataTable();
         }
 
-        // Private Methods //
+        // Public Methods // 
 
-        private void GenerateRandomMatrix()
+        public bool TryGetCustomThreshold(out double value, bool suppressErrorMessage = false)
         {
-            Matrix = new Matrix(6, 6);
-            var rnd = new Random();
-
-            Matrix.Columns.Fill((i) => new MatrixColumnRowData
+            if (!double.TryParse(tb_customThreshold.Text.Replace('.', ','), out value) || value < 0.0 || value > 1.0)
             {
-                Header = $"Средство {i}",
-                Enabled = true
-            });
-            Matrix.Rows.Fill((i) => new MatrixColumnRowData
-            {
-                Header = $"Угроза {i}",
-                Enabled = true
-            });
-
-            for (int j = 0; j < Matrix.Rows.Length; j++)
-            {
-                for (int i = 0; i < Matrix.Columns.Length; i++)
+                if (!suppressErrorMessage)
                 {
-                    Matrix.Values[i, j] = (float)Math.Round(rnd.NextDouble(), 2);
+                    ShowError("Неверный формат данных для критерия оценки");
                 }
-            }
-        }
-
-        private void LoadDataTable()
-        {
-            MatrixAsDataTable = new DataTable();
-            MatrixAsDataTable.Columns.Add("Угроза", typeof(string));
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                MatrixAsDataTable.Columns.Add(Matrix.Columns[i].Header, typeof(float));
-            }
-            for (int j = 0; j < Matrix.Rows.Length; j++)
-            {
-                LoadRow(j);
-            }
-            columnsSelected = Matrix.Columns.Length;
-        }
-
-        private void LoadRow(int rowIndex)
-        {
-            DataRow row = MatrixAsDataTable.NewRow();
-            row[0] = Matrix.Rows[rowIndex].Header;
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                row[i + 1] = Matrix.Values[i, rowIndex];
-            }
-            MatrixAsDataTable.Rows.Add(row);
-        }
-
-        private bool CheckSelection()
-        {
-            if (columnsSelected == 0)
-            {
-                ShowError("Выберите хотя бы одно средство защиты");
-                return false;
-            }
-            if (MatrixAsDataTable.Rows.Count == 0)
-            {
-                ShowError("Выберите хотя бы одну угрозу");
                 return false;
             }
             return true;
         }
 
-        private void SetColumnVisibility(string header, bool visible)
+        public void ShowMessage(string header, string content)
         {
-            int i = Matrix.Columns.FindIndex(x => x.Header == header) + 1;
-            if (visible)
+            MessageBox.Show(content, header, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // Private Methods //
+
+        private void InitializeDataTable()
+        {
+            var matrix = ((MainWindowViewModel)DataContext).Matrix;
+            for (int i = 0; i < matrix.Columns.Length; i++)
             {
-                if (dataGrid.Columns[i].Visibility != Visibility.Visible)
+                var col = new DataGridTextColumn
                 {
-                    dataGrid.Columns[i].Visibility = Visibility.Visible;
-                    columnsSelected++;
-                }
-            }
-            else
-            {
-                if (dataGrid.Columns[i].Visibility == Visibility.Visible)
+                    Header = matrix.Columns[i].Header,
+                    Binding = new Binding($"[{i}]")
+                };
+                BindingOperations.SetBinding(col, DataGridTextColumn.VisibilityProperty, new Binding
                 {
-                    dataGrid.Columns[i].Visibility = Visibility.Collapsed;
-                    columnsSelected--;
-                }
+                    Path = new PropertyPath(nameof(MatrixColumnViewModel.IsEnabled)),
+                    Source = matrix.Columns[i],
+                    Converter = (IValueConverter)Resources[nameof(BooleanToVisibilityConverter)],
+                });
+                dataGrid.Columns.Add(col);
             }
         }
 
-        private void SetRowVisibility(string header, bool visible)
-        {
-            for (int j = 0; j < dataGrid.Items.Count; j++)
-            {
-                if ((string)MatrixAsDataTable.Rows[j][0] == header)
-                {
-                    if (!visible)
-                    {
-                        MatrixAsDataTable.Rows.RemoveAt(j);
-                    }
-                    return;
-                }
-            }
-            LoadRow(Matrix.Rows.FindIndex(x => x.Header == header));
-        }
-
-        private void ShowSolutions(List<int> solutions)
-        {
-            for (int i = 0; i < Matrix.Columns.Length; i++)
-            {
-                var col = Matrix.Columns[i];
-                bool b = solutions.Contains(i);
-
-                col.Enabled = b;
-                SetColumnVisibility(col.Header, b);
-            }
-        }
-
-        private void ShowError(string content)
-        {
-            MessageBox.Show(content, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-        // UI Events //
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            dataGrid.Columns[0].Width = DataGridLength.Auto;
-            MatrixAsDataTable.DefaultView.Sort = MatrixAsDataTable.Columns[0].ColumnName;
-        }
-
-        private void ColumnCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            SetColumnVisibility((string)cb.Content, cb.IsChecked.Value);
-        }
-
-        private void RowCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            SetRowVisibility((string)cb.Content, cb.IsChecked.Value);
-        }
-
-        private void ButtonProbability_Click(object sender, RoutedEventArgs e)
-        {
-            if (!double.TryParse(thresholdTextBox.Text.Replace('.', ','), out double val) || val < 0f || val > 1f)
-            {
-                ShowError("Неверный формат данных для минимальной вероятности защиты");
-                return;
-            }
-
-            if (!CheckSelection())
-                return;
-
-            if (MatrixMath.TryFindByProbability(Matrix, val, out List<int> results))
-                ShowSolutions(results);
-            else
-                ShowError("Решение невозможно");
-        }
-
-        private void ButtonBest_Click(object sender, RoutedEventArgs e)
-        {
-            if (CheckSelection())
-                ShowSolutions(MatrixMath.FindBest(Matrix));
-        }
-
-        private void ButtonAllColumns_Click(object sender, RoutedEventArgs e)
-        {
-            var value = !Matrix.Columns[0].Enabled;
-            for (int i = Matrix.Columns.Length - 1; i >= 0; i--)
-            {
-                var col = Matrix.Columns[i];
-                col.Enabled = value;
-                SetColumnVisibility(col.Header, value);
-            }
-        }
-
-        private void ButtonAllRows_Click(object sender, RoutedEventArgs e)
-        {
-            var value = !Matrix.Rows[0].Enabled;
-            for (int i = Matrix.Rows.Length - 1; i >= 0; i--)
-            {
-                var row = Matrix.Rows[i];
-                row.Enabled = value;
-                SetRowVisibility(row.Header, value);
-            }
-        }
+        private void ShowError(string content) => MessageBox.Show(content, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }

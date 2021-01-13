@@ -24,5 +24,23 @@ namespace Strategist.Core.Extensions
             }
             return -1;
         }
+
+        public static IEnumerable<List<T>> Combinations<T>(this IList<T> list)
+        {
+            int count = (int)Math.Pow(2, list.Count);
+            for (int i = count - 1; i > 0; i--)
+            {
+                string str = Convert.ToString(i, 2).PadLeft(list.Count, '0');
+                var result = new List<T>(list.Count);
+                for (int j = 0; j < str.Length; j++)
+                {
+                    if (str[j] == '1')
+                    {
+                        result.Add(list[j]);
+                    }
+                }
+                yield return result;
+            }
+        }
     }
 }
