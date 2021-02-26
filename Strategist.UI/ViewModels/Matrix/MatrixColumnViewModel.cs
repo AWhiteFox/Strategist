@@ -10,15 +10,15 @@ namespace Strategist.UI.ViewModels
         private readonly Matrix matrix;
         private readonly int index;
 
-        public string Header => string.Join(", ", matrix.Columns[index].Tags);
-        public bool IsEnabled => matrix.Columns[index].IsEnabled;
+        public string Header => string.Join(", ", matrix.ColumnHeaders[index]);
+        public bool IsEnabled => matrix.ColumnsEnabled[index];
 
         public MatrixColumnViewModel(Matrix matrix, int index, MatrixColumnTagViewModel[] tagsArr)
         {
             this.matrix = matrix;
             this.index = index;
-            var tags = matrix.Columns[index].Tags;
-            for (int i = 0; i < tags.Count; i++)
+            var tags = matrix.ColumnHeaders[index];
+            for (int i = 0; i < tags.Length; i++)
             {
                 Array.Find(tagsArr, x => x.Title == tags[i]).PropertyChanged += OnTagIsEnabledChanged;
             }

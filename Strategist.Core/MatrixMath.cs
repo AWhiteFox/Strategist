@@ -9,15 +9,15 @@ namespace Strategist.Core
         public static int FindBestRow(Matrix matrix, double[] thresholds)
         {
             int best_i = -1;
-            for (int i = 0; i < matrix.Rows.Count; i++)
+            for (int i = 0; i < matrix.RowHeaders.Count; i++)
             {
-                if (!matrix.Rows[i].IsEnabled)
+                if (!matrix.RowsEnabled[i])
                     continue;
 
                 bool flag = true;
-                for (int j = 0; j < matrix.Columns.Count; j++)
+                for (int j = 0; j < matrix.ColumnHeaders.Count; j++)
                 {
-                    if (!matrix.Columns[j].IsEnabled)
+                    if (!matrix.ColumnsEnabled[j])
                         continue;
 
                     if (matrix[j, i] < thresholds[j])
@@ -26,7 +26,7 @@ namespace Strategist.Core
                         break;
                     }
                 }
-                if (flag && (best_i == -1 || matrix.Rows[i].Tags.Count < matrix.Rows[best_i].Tags.Count))
+                if (flag && (best_i == -1 || matrix.RowHeaders[i].Length < matrix.RowHeaders[best_i].Length))
                 {
                     best_i = i;
                 }
@@ -36,20 +36,20 @@ namespace Strategist.Core
 
         public static int FindBestRow(Matrix matrix, double threshold)
         {
-            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.Columns.Count).ToArray());
+            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.ColumnHeaders.Count).ToArray());
         }
 
         public static double[] GetColumnMaximums(Matrix matrix)
         {
-            double[] maximums = new double[matrix.Columns.Count];
-            for (int i = 0; i < matrix.Columns.Count; i++)
+            double[] maximums = new double[matrix.ColumnHeaders.Count];
+            for (int i = 0; i < matrix.ColumnHeaders.Count; i++)
             {
-                if (matrix.Columns[i].IsEnabled)
+                if (matrix.ColumnsEnabled[i])
                 {
                     double max = 0;
-                    for (int j = 0; j < matrix.Rows.Count; j++)
+                    for (int j = 0; j < matrix.RowHeaders.Count; j++)
                     {
-                        if (matrix.Rows[j].IsEnabled)
+                        if (matrix.RowsEnabled[j])
                         {
                             max = Math.Max(max, matrix[i, j]);
                         }
@@ -66,16 +66,16 @@ namespace Strategist.Core
 
         public static double[] GetColumnMedians(Matrix matrix)
         {
-            double[] medians = new double[matrix.Columns.Count];
+            double[] medians = new double[matrix.ColumnHeaders.Count];
             List<double> values = new List<double>();
-            for (int i = 0; i < matrix.Columns.Count; i++)
+            for (int i = 0; i < matrix.ColumnHeaders.Count; i++)
             {
-                if (matrix.Columns[i].IsEnabled)
+                if (matrix.ColumnsEnabled[i])
                 {
                     values.Clear();
-                    for (int j = 0; j < matrix.Rows.Count; j++)
+                    for (int j = 0; j < matrix.RowHeaders.Count; j++)
                     {  
-                        if (matrix.Rows[j].IsEnabled)
+                        if (matrix.RowsEnabled[j])
                         {
                             values.Add(matrix[i, j]);
                         }
