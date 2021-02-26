@@ -7,7 +7,6 @@ namespace Strategist.UI.ViewModels
 {
     public class MatrixViewModel
     {
-        // Public Properties //
         public Matrix Matrix { get; }
         public MatrixColumnViewModel[] Columns { get; }
         public MatrixRowViewModel[] Rows { get; }
@@ -16,15 +15,11 @@ namespace Strategist.UI.ViewModels
         public int ColumnTagsEnabled => ColumnTags.Count(x => x.IsEnabled);
         public int RowTagsEnabled => RowTags.Count(x => x.IsEnabled);
 
-        // Indexer //
-
         public double this[int i, int j]
         {
             get => Matrix[i, j];
             set => Matrix[i, j] = value;
         }
-
-        // Constructor //
 
         public MatrixViewModel()
         {
@@ -36,8 +31,6 @@ namespace Strategist.UI.ViewModels
             Rows = new MatrixRowViewModel[Matrix.Height];
             Rows.Fill(i => new MatrixRowViewModel(Matrix, i, RowTags));
         }
-
-        // Public Methods //
 
         public void SwitchAllColumnTags()
         {

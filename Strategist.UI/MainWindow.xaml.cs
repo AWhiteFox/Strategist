@@ -10,13 +10,9 @@ namespace Strategist.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Public Properties //
-        
         public bool MaxThresholdSelected => rb_max.IsChecked.Value;
         public bool MedianThresholdSelected => rb_median.IsChecked.Value;
         public bool CustomThresholdSelected => rb_custom.IsChecked.Value;
-
-        // Constructor //
 
         public MainWindow()
         {
@@ -24,8 +20,6 @@ namespace Strategist.UI
             DataContext = new MainWindowViewModel(this);
             InitializeDataTable();
         }
-
-        // Public Methods // 
 
         public bool TryGetCustomThreshold(out double value, bool suppressErrorMessage = false)
         {
@@ -44,8 +38,6 @@ namespace Strategist.UI
         {
             MessageBox.Show(content, header, MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
-        // Private Methods //
 
         private void InitializeDataTable()
         {
