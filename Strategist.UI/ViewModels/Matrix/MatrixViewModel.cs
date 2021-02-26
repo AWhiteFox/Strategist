@@ -28,7 +28,7 @@ namespace Strategist.UI.ViewModels
 
         public MatrixViewModel()
         {
-            Matrix = MatrixLoader.LoadRandom();
+            Matrix = new RandomMatrixLoader(6, 4).Load(); // TEMP 
             ColumnTags = Matrix.ColumnTags.Keys.Select(x => new MatrixColumnTagViewModel(x, Matrix)).ToArray();
             RowTags = Matrix.RowTags.Keys.Select(x => new MatrixRowTagViewModel(x, Matrix)).ToArray();
             Columns = new MatrixColumnViewModel[Matrix.Width];
