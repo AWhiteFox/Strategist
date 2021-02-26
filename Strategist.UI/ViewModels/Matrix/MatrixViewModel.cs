@@ -1,5 +1,6 @@
 ﻿using Strategist.Core;
 using Strategist.Core.Extensions;
+using Strategist.Core.MatrixLoaders;
 using System.Linq;
 
 namespace Strategist.UI.ViewModels

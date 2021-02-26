@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Strategist.Core
+namespace Strategist.Core.MatrixLoaders
 {
     public static class MatrixLoader
     {
