@@ -17,10 +17,10 @@ namespace Strategist.UI.ViewModels
         {
             this.matrix = matrix;
             this.index = index;
-            var tags = matrix.ColumnHeaders[index];
-            for (int i = 0; i < tags.Length; i++)
+            string[] tags = matrix.ColumnHeaders[index];
+            foreach (string t in tags)
             {
-                Array.Find(tagsArr, x => x.Title == tags[i]).PropertyChanged += OnTagIsEnabledChanged;
+                Array.Find(tagsArr, x => x.Title == t).PropertyChanged += OnTagIsEnabledChanged;
             }
         }
 

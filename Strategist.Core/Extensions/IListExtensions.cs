@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Strategist.Core.Extensions
 {
-    public static class IListExtensions
+    public static class ListExtensions
     {
         public static void Fill<T>(this IList<T> list, Func<int, T> func)
         {

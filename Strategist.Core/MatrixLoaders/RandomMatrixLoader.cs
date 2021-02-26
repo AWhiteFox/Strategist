@@ -40,11 +40,7 @@ namespace Strategist.Core.MatrixLoaders
                 int i = m.Height - 1;
                 for (int j = 0; j < width; j++)
                 {
-                    double val = 0.0;
-                    foreach (var tag in row)
-                    {
-                        val = Math.Max(val, rows[tag][j]);
-                    }
+                    double val = row.Select(tag => rows[tag][j]).Max();
                     m[j, i] = val;
                 }
             }

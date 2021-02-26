@@ -41,9 +41,9 @@ namespace Strategist.Core
         public void AddColumn(string[] tags)
         {
             AddAxis(0, tags);
-            for (int i = 0; i < values.Count; i++)
+            foreach (var t in values)
             {
-                values[i].Add(0.0);
+                t.Add(0.0);
             }
         }
 
@@ -56,11 +56,11 @@ namespace Strategist.Core
         private void AddAxis(int dim, string[] tags)
         {
             headers[dim].Add(tags);
-            for (int i = 0; i < tags.Length; i++)
+            foreach (string t in tags)
             {
-                if (!tagsEnabled[dim].ContainsKey(tags[i]))
+                if (!tagsEnabled[dim].ContainsKey(t))
                 {
-                    tagsEnabled[dim].Add(tags[i], true);
+                    tagsEnabled[dim].Add(t, true);
                 }
             }
             headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));

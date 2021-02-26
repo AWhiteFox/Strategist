@@ -8,7 +8,7 @@ namespace Strategist.Core
     {
         public static int FindBestRow(Matrix matrix, double[] thresholds)
         {
-            int best_i = -1;
+            int best = -1;
             for (int i = 0; i < matrix.Height; i++)
             {
                 if (!matrix.RowsEnabled[i])
@@ -26,12 +26,12 @@ namespace Strategist.Core
                         break;
                     }
                 }
-                if (flag && (best_i == -1 || matrix.RowHeaders[i].Length < matrix.RowHeaders[best_i].Length))
+                if (flag && (best == -1 || matrix.RowHeaders[i].Length < matrix.RowHeaders[best].Length))
                 {
-                    best_i = i;
+                    best = i;
                 }
             }
-            return best_i;
+            return best;
         }
 
         public static int FindBestRow(Matrix matrix, double threshold)
@@ -41,7 +41,7 @@ namespace Strategist.Core
 
         public static double[] GetColumnMaximums(Matrix matrix)
         {
-            double[] maximums = new double[matrix.Width];
+            var maximums = new double[matrix.Width];
             for (int i = 0; i < matrix.Width; i++)
             {
                 if (matrix.ColumnsEnabled[i])
@@ -66,8 +66,8 @@ namespace Strategist.Core
 
         public static double[] GetColumnMedians(Matrix matrix)
         {
-            double[] medians = new double[matrix.Width];
-            List<double> values = new List<double>();
+            var medians = new double[matrix.Width];
+            var values = new List<double>();
             for (int i = 0; i < matrix.Width; i++)
             {
                 if (matrix.ColumnsEnabled[i])

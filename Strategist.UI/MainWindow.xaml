@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Strategist.UI.ViewModels"
         mc:Ignorable="d"    
         Title="MainWindow"
         Name="Window"
         Height="600" Width="1000"
-        MinHeight="200" MinWidth="800">
+        MinHeight="200" MinWidth="800" 
+        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
@@ -72,7 +74,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <DataGrid Grid.Row="0"
-                      x:Name="dataGrid" 
+                      x:Name="DataGrid" 
                       IsReadOnly="True"
                       ColumnWidth="*"
                       CanUserResizeColumns="False"
@@ -85,7 +87,8 @@
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Setter Property="Visibility" 
-                                Value="{Binding Item.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                Value="{Binding IsEnabled, 
+                                        Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
@@ -106,11 +109,11 @@
                         Background="WhiteSmoke">
                     <StackPanel>
                         <Label Content="Критерий оценки:"/>
-                        <RadioButton x:Name="rb_max" Margin="5 0" Content="По максимальному значению" IsChecked="True"/>
-                        <RadioButton x:Name="rb_median" Margin="5 0" Content="По медиане"/>
-                        <RadioButton x:Name="rb_custom" Margin="5 0" Content="По заданному значению"/>
-                        <TextBox x:Name="tb_customThreshold" Margin="5" Text="0.5" 
-                                 IsEnabled="{Binding IsChecked, ElementName=rb_custom}"/>
+                        <RadioButton x:Name="RbMax" Margin="5 0" Content="По максимальному значению" IsChecked="True"/>
+                        <RadioButton x:Name="RbMedian" Margin="5 0" Content="По медиане"/>
+                        <RadioButton x:Name="RbCustom" Margin="5 0" Content="По заданному значению"/>
+                        <TextBox x:Name="TbCustomThreshold" Margin="5" Text="0.5" 
+                                 IsEnabled="{Binding IsChecked, ElementName=RbCustom}"/>
                     </StackPanel>
                 </Border>
                 <Grid Grid.Column="1" Margin="0,0,0,-5">

@@ -35,18 +35,18 @@ namespace Strategist.UI.ViewModels
         public void SwitchAllColumnTags()
         {
             bool value = !ColumnTags[0].IsEnabled;
-            for (int i = 0; i < ColumnTags.Length; i++)
+            foreach (var t in ColumnTags)
             {
-                ColumnTags[i].IsEnabled = value;
+                t.IsEnabled = value;
             }
         }
 
         public void SwitchAllRowTags()
         {
             bool value = !RowTags[0].IsEnabled;
-            for (int i = 0; i < RowTags.Length; i++)
+            foreach (var t in RowTags)
             {
-                RowTags[i].IsEnabled = value;
+                t.IsEnabled = value;
             }
         }
     }
