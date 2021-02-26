@@ -1,15 +1,10 @@
 ﻿using Strategist.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Strategist.UI.ViewModels
 {
     public class MainWindowViewModel
     {
-        private MainWindow window;
+        private readonly MainWindow window;
 
         public MatrixViewModel Matrix { get; }
         public RelayCommand SwitchAllColumnTagsCommand { get; }

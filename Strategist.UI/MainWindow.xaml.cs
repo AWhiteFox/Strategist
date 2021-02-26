@@ -10,13 +10,9 @@ namespace Strategist.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Public Properties //
-        
-        public bool MaxThresholdSelected => rb_max.IsChecked.Value;
-        public bool MedianThresholdSelected => rb_median.IsChecked.Value;
-        public bool CustomThresholdSelected => rb_custom.IsChecked.Value;
-
-        // Constructor //
+        public bool MaxThresholdSelected => RbMax.IsChecked.HasValue && RbMax.IsChecked.Value;
+        public bool MedianThresholdSelected => RbMedian.IsChecked.HasValue && RbMedian.IsChecked.Value;
+        public bool CustomThresholdSelected => RbCustom.IsChecked.HasValue && RbCustom.IsChecked.Value;
 
         public MainWindow()
         {
@@ -25,27 +21,19 @@ namespace Strategist.UI
             InitializeDataTable();
         }
 
-        // Public Methods // 
-
         public bool TryGetCustomThreshold(out double value, bool suppressErrorMessage = false)
         {
-            if (!double.TryParse(tb_customThreshold.Text.Replace('.', ','), out value) || value < 0.0 || value > 1.0)
-            {
-                if (!suppressErrorMessage)
-                {
-                    ShowError("Неверный формат данных для критерия оценки");
-                }
-                return false;
-            }
-            return true;
+            if (double.TryParse(TbCustomThreshold.Text.Replace('.', ','), out value) && 0.0 <= value && value <= 1.0) 
+                return true;
+            if (!suppressErrorMessage)
+                ShowError("Неверный формат данных для критерия оценки");
+            return false;
         }
 
         public void ShowMessage(string header, string content)
         {
             MessageBox.Show(content, header, MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
-        // Private Methods //
 
         private void InitializeDataTable()
         {
@@ -57,13 +45,13 @@ namespace Strategist.UI
                     Header = matrix.Columns[i].Header,
                     Binding = new Binding($"[{i}]")
                 };
-                BindingOperations.SetBinding(col, DataGridTextColumn.VisibilityProperty, new Binding
+                BindingOperations.SetBinding(col, DataGridColumn.VisibilityProperty, new Binding
                 {
                     Path = new PropertyPath(nameof(MatrixColumnViewModel.IsEnabled)),
                     Source = matrix.Columns[i],
                     Converter = (IValueConverter)Resources[nameof(BooleanToVisibilityConverter)],
                 });
-                dataGrid.Columns.Add(col);
+                DataGrid.Columns.Add(col);
             }
         }
 

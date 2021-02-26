@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Strategist.Core.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,15 +7,18 @@ namespace Strategist.Core
     public class Matrix
     {
         private readonly List<List<double>> values;
-        private readonly List<MatrixAxis> columns;
-        private readonly List<MatrixAxis> rows;
-        private readonly Dictionary<string, bool> columnTags;
-        private readonly Dictionary<string, bool> rowTags;
+        private readonly Pair<List<string[]>> headers;
+        private readonly Pair<List<bool>> headersEnabled;
+        private readonly Pair<Dictionary<string, bool>> tagsEnabled;
 
-        public IReadOnlyDictionary<string, bool> ColumnTags => columnTags;
-        public IReadOnlyDictionary<string, bool> RowTags => rowTags;
-        public IReadOnlyList<MatrixAxis> Columns => columns;
-        public IReadOnlyList<MatrixAxis> Rows => rows;
+        public int Width => values.Count > 0 ? values[0].Count : 0;
+        public int Height => values.Count;
+        public IReadOnlyList<string[]> ColumnHeaders => headers[0];
+        public IReadOnlyList<string[]> RowHeaders => headers[1];
+        public IReadOnlyList<bool> ColumnsEnabled => headersEnabled[0];
+        public IReadOnlyList<bool> RowsEnabled => headersEnabled[1];
+        public IReadOnlyDictionary<string, bool> ColumnTags => tagsEnabled[0];
+        public IReadOnlyDictionary<string, bool> RowTags => tagsEnabled[1];
 
         public double this[int i, int j]
         {
@@ -26,41 +29,53 @@ namespace Strategist.Core
         public Matrix()
         {
             values = new List<List<double>>();
-            columns = new List<MatrixAxis>();
-            rows = new List<MatrixAxis>();
-            columnTags = new Dictionary<string, bool>();
-            rowTags = new Dictionary<string, bool>();
+            headers = Pair.FromFunc(_ => new List<string[]>());
+            headersEnabled = Pair.FromFunc(_ => new List<bool>());
+            tagsEnabled = Pair.FromFunc(_ => new Dictionary<string, bool>());
         }
 
-        public void SetColumnTagEnabled(string key, bool value) => columnTags[key] = value;
+        public void SetColumnTagEnabled(string key, bool value) => SetAxisTagEnabled(0, key, value);
 
-        public void SetRowTagEnabled(string key, bool value) => rowTags[key] = value;
+        public void SetRowTagEnabled(string key, bool value) => SetAxisTagEnabled(1, key, value);
 
         public void AddColumn(string[] tags)
         {
-            AddAxis(columns, tags, columnTags);
-            for (int i = 0; i < values.Count; i++)
+            AddAxis(0, tags);
+            foreach (var t in values)
             {
-                values[i].Add(0.0);
+                t.Add(0.0);
             }
         }
 
         public void AddRow(string[] tags)
         {
-            AddAxis(rows, tags, rowTags);
-            values.Add(Enumerable.Repeat(0.0, columns.Count).ToList());
+            AddAxis(1, tags);
+            values.Add(Enumerable.Repeat(0.0, headers[0].Count).ToList());
         }
 
-        private static void AddAxis(List<MatrixAxis> axisCollection, string[] tags, Dictionary<string, bool> tagsDict)
+        private void AddAxis(int dim, string[] tags)
         {
-            for (int i = 0; i < tags.Length; i++)
+            headers[dim].Add(tags);
+            foreach (string t in tags)
             {
-                if (!tagsDict.ContainsKey(tags[i]))
+                if (!tagsEnabled[dim].ContainsKey(t))
                 {
-                    tagsDict.Add(tags[i], true);
+                    tagsEnabled[dim].Add(t, true);
                 }
             }
-            axisCollection.Add(new MatrixAxis(tags, tagsDict));
+            headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));
+        }
+
+        private void SetAxisTagEnabled(int dim, string key, bool value)
+        {
+            if (tagsEnabled[dim][key] == value)
+                return;
+
+            tagsEnabled[dim][key] = value;
+            for (int i = 0; i < headers[dim].Count; i++)
+            {
+                headersEnabled[dim][i] = headers[dim][i].All(tag => tagsEnabled[dim][tag]);
+            }
         }
     }
 }

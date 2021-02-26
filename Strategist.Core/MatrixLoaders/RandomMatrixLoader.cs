@@ -3,43 +3,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Strategist.Core
+namespace Strategist.Core.MatrixLoaders
 {
-    public static class MatrixLoader
+    public class RandomMatrixLoader : MatrixLoader
     {
-        // TEMOPORARY IMPLEMENTATION
-        public static Matrix LoadRandom()
-        {
-            int col_count = 6;
-            int row_count = 3;
+        private readonly int width;
+        private readonly int height;
 
+        public RandomMatrixLoader(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+        }
+
+        public override Matrix Load()
+        {
             var m = new Matrix();
             var rnd = new Random();
 
-            for (int i = 0; i < col_count; i++)
+            for (int i = 0; i < width; i++)
             {
                 m.AddColumn(new[] { $"Угроза {i}" });
             }
 
             var rows = new Dictionary<string, double[]>();
-            for (int i = 0; i < row_count; i++)
+            for (int i = 0; i < height; i++)
             {
-                var arr = new double[col_count];
+                var arr = new double[width];
                 arr.Fill(_ => Math.Round(rnd.NextDouble(), 2));
                 rows[$"Средство {i}"] = arr;
             }
-            
+
             foreach (var row in rows.Keys.ToArray().Combinations())
             {
                 m.AddRow(row.ToArray());
-                int i = m.Rows.Count - 1;
-                for (int j = 0; j < col_count; j++)
+                int i = m.Height - 1;
+                for (int j = 0; j < width; j++)
                 {
-                    double val = 0.0;
-                    foreach (var tag in row)
-                    {
-                        val = Math.Max(val, rows[tag][j]);
-                    }
+                    double val = row.Select(tag => rows[tag][j]).Max();
                     m[j, i] = val;
                 }
             }

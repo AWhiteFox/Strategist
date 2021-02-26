@@ -1,12 +1,12 @@
 ﻿using Strategist.Core;
 using Strategist.Core.Extensions;
+using Strategist.Core.MatrixLoaders;
 using System.Linq;
 
 namespace Strategist.UI.ViewModels
 {
     public class MatrixViewModel
     {
-        // Public Properties //
         public Matrix Matrix { get; }
         public MatrixColumnViewModel[] Columns { get; }
         public MatrixRowViewModel[] Rows { get; }
@@ -15,44 +15,38 @@ namespace Strategist.UI.ViewModels
         public int ColumnTagsEnabled => ColumnTags.Count(x => x.IsEnabled);
         public int RowTagsEnabled => RowTags.Count(x => x.IsEnabled);
 
-        // Indexer //
-
         public double this[int i, int j]
         {
             get => Matrix[i, j];
             set => Matrix[i, j] = value;
         }
 
-        // Constructor //
-
         public MatrixViewModel()
         {
-            Matrix = MatrixLoader.LoadRandom();
+            Matrix = new RandomMatrixLoader(6, 4).Load(); // TEMP 
             ColumnTags = Matrix.ColumnTags.Keys.Select(x => new MatrixColumnTagViewModel(x, Matrix)).ToArray();
             RowTags = Matrix.RowTags.Keys.Select(x => new MatrixRowTagViewModel(x, Matrix)).ToArray();
-            Columns = new MatrixColumnViewModel[Matrix.Columns.Count];
+            Columns = new MatrixColumnViewModel[Matrix.Width];
             Columns.Fill(i => new MatrixColumnViewModel(Matrix, i, ColumnTags));
-            Rows = new MatrixRowViewModel[Matrix.Rows.Count];
+            Rows = new MatrixRowViewModel[Matrix.Height];
             Rows.Fill(i => new MatrixRowViewModel(Matrix, i, RowTags));
         }
-
-        // Public Methods //
 
         public void SwitchAllColumnTags()
         {
             bool value = !ColumnTags[0].IsEnabled;
-            for (int i = 0; i < ColumnTags.Length; i++)
+            foreach (var t in ColumnTags)
             {
-                ColumnTags[i].IsEnabled = value;
+                t.IsEnabled = value;
             }
         }
 
         public void SwitchAllRowTags()
         {
             bool value = !RowTags[0].IsEnabled;
-            for (int i = 0; i < RowTags.Length; i++)
+            foreach (var t in RowTags)
             {
-                RowTags[i].IsEnabled = value;
+                t.IsEnabled = value;
             }
         }
     }
