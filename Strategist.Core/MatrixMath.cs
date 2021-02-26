@@ -9,13 +9,13 @@ namespace Strategist.Core
         public static int FindBestRow(Matrix matrix, double[] thresholds)
         {
             int best_i = -1;
-            for (int i = 0; i < matrix.RowHeaders.Count; i++)
+            for (int i = 0; i < matrix.Height; i++)
             {
                 if (!matrix.RowsEnabled[i])
                     continue;
 
                 bool flag = true;
-                for (int j = 0; j < matrix.ColumnHeaders.Count; j++)
+                for (int j = 0; j < matrix.Width; j++)
                 {
                     if (!matrix.ColumnsEnabled[j])
                         continue;
@@ -36,18 +36,18 @@ namespace Strategist.Core
 
         public static int FindBestRow(Matrix matrix, double threshold)
         {
-            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.ColumnHeaders.Count).ToArray());
+            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.Width).ToArray());
         }
 
         public static double[] GetColumnMaximums(Matrix matrix)
         {
-            double[] maximums = new double[matrix.ColumnHeaders.Count];
-            for (int i = 0; i < matrix.ColumnHeaders.Count; i++)
+            double[] maximums = new double[matrix.Width];
+            for (int i = 0; i < matrix.Width; i++)
             {
                 if (matrix.ColumnsEnabled[i])
                 {
                     double max = 0;
-                    for (int j = 0; j < matrix.RowHeaders.Count; j++)
+                    for (int j = 0; j < matrix.Height; j++)
                     {
                         if (matrix.RowsEnabled[j])
                         {
@@ -66,14 +66,14 @@ namespace Strategist.Core
 
         public static double[] GetColumnMedians(Matrix matrix)
         {
-            double[] medians = new double[matrix.ColumnHeaders.Count];
+            double[] medians = new double[matrix.Width];
             List<double> values = new List<double>();
-            for (int i = 0; i < matrix.ColumnHeaders.Count; i++)
+            for (int i = 0; i < matrix.Width; i++)
             {
                 if (matrix.ColumnsEnabled[i])
                 {
                     values.Clear();
-                    for (int j = 0; j < matrix.RowHeaders.Count; j++)
+                    for (int j = 0; j < matrix.Height; j++)
                     {  
                         if (matrix.RowsEnabled[j])
                         {

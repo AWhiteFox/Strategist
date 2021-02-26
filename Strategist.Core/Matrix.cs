@@ -11,6 +11,8 @@ namespace Strategist.Core
         private readonly Pair<List<bool>> headersEnabled;
         private readonly Pair<Dictionary<string, bool>> tagsEnabled;
 
+        public int Width => values.Count > 0 ? values[0].Count : 0;
+        public int Height => values.Count;
         public IReadOnlyList<string[]> ColumnHeaders => headers[0];
         public IReadOnlyList<string[]> RowHeaders => headers[1];
         public IReadOnlyList<bool> ColumnsEnabled => headersEnabled[0];

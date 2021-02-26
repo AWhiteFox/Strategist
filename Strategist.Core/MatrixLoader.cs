@@ -32,7 +32,7 @@ namespace Strategist.Core
             foreach (var row in rows.Keys.ToArray().Combinations())
             {
                 m.AddRow(row.ToArray());
-                int i = m.RowHeaders.Count - 1;
+                int i = m.Height - 1;
                 for (int j = 0; j < col_count; j++)
                 {
                     double val = 0.0;

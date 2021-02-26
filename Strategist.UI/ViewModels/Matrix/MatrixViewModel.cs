@@ -30,9 +30,9 @@ namespace Strategist.UI.ViewModels
             Matrix = MatrixLoader.LoadRandom();
             ColumnTags = Matrix.ColumnTags.Keys.Select(x => new MatrixColumnTagViewModel(x, Matrix)).ToArray();
             RowTags = Matrix.RowTags.Keys.Select(x => new MatrixRowTagViewModel(x, Matrix)).ToArray();
-            Columns = new MatrixColumnViewModel[Matrix.ColumnHeaders.Count];
+            Columns = new MatrixColumnViewModel[Matrix.Width];
             Columns.Fill(i => new MatrixColumnViewModel(Matrix, i, ColumnTags));
-            Rows = new MatrixRowViewModel[Matrix.RowHeaders.Count];
+            Rows = new MatrixRowViewModel[Matrix.Height];
             Rows.Fill(i => new MatrixRowViewModel(Matrix, i, RowTags));
         }
 
