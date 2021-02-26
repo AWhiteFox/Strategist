@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Strategist.Core.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,19 +7,16 @@ namespace Strategist.Core
     public class Matrix
     {
         private readonly List<List<double>> values;
-        private readonly List<string[]> columnHeaders;
-        private readonly List<string[]> rowHeaders;
-        private readonly List<bool> columnsEnabled;
-        private readonly List<bool> rowsEnabled;
-        private readonly Dictionary<string, bool> columnTags;
-        private readonly Dictionary<string, bool> rowTags;
+        private readonly Pair<List<string[]>> headers;
+        private readonly Pair<List<bool>> headersEnabled;
+        private readonly Pair<Dictionary<string, bool>> tagsEnabled;
 
-        public IReadOnlyDictionary<string, bool> ColumnTags => columnTags;
-        public IReadOnlyDictionary<string, bool> RowTags => rowTags;
-        public IReadOnlyList<string[]> ColumnHeaders => columnHeaders;
-        public IReadOnlyList<string[]> RowHeaders => rowHeaders;
-        public IReadOnlyList<bool> ColumnsEnabled => columnsEnabled;
-        public IReadOnlyList<bool> RowsEnabled => rowsEnabled;
+        public IReadOnlyList<string[]> ColumnHeaders => headers[0];
+        public IReadOnlyList<string[]> RowHeaders => headers[1];
+        public IReadOnlyList<bool> ColumnsEnabled => headersEnabled[0];
+        public IReadOnlyList<bool> RowsEnabled => headersEnabled[1];
+        public IReadOnlyDictionary<string, bool> ColumnTags => tagsEnabled[0];
+        public IReadOnlyDictionary<string, bool> RowTags => tagsEnabled[1];
 
         public double this[int i, int j]
         {
@@ -30,62 +27,52 @@ namespace Strategist.Core
         public Matrix()
         {
             values = new List<List<double>>();
-            columnHeaders = new List<string[]>();
-            rowHeaders = new List<string[]>();
-            columnTags = new Dictionary<string, bool>();
-            rowTags = new Dictionary<string, bool>();
-
-            columnsEnabled = new List<bool>();
-            rowsEnabled = new List<bool>();
+            headers = Pair.FromFunc(_ => new List<string[]>());
+            headersEnabled = Pair.FromFunc(_ => new List<bool>());
+            tagsEnabled = Pair.FromFunc(_ => new Dictionary<string, bool>());
         }
 
-        public void SetColumnTagEnabled(string key, bool value)
-        {
-            SetAxisTagEnabled(columnHeaders, columnsEnabled, columnTags, key, value);
-        }
+        public void SetColumnTagEnabled(string key, bool value) => SetAxisTagEnabled(0, key, value);
 
-        public void SetRowTagEnabled(string key, bool value)
-        {
-            SetAxisTagEnabled(rowHeaders, rowsEnabled, rowTags, key, value);
-        }
+        public void SetRowTagEnabled(string key, bool value) => SetAxisTagEnabled(1, key, value);
 
         public void AddColumn(string[] tags)
         {
-            AddAxis(columnHeaders, columnsEnabled, columnTags, tags);
+            AddAxis(0, tags);
             for (int i = 0; i < values.Count; i++)
             {
                 values[i].Add(0.0);
-            } 
+            }
         }
 
         public void AddRow(string[] tags)
         {
-            AddAxis(rowHeaders, rowsEnabled, rowTags, tags);
-            values.Add(Enumerable.Repeat(0.0, columnHeaders.Count).ToList());
+            AddAxis(1, tags);
+            values.Add(Enumerable.Repeat(0.0, headers[0].Count).ToList());
         }
 
-        private static void AddAxis(List<string[]> headersList, List<bool> enabledList, Dictionary<string, bool> tagDictionary, string[] tags)
+        private void AddAxis(int dim, string[] tags)
         {
-            headersList.Add(tags);
+            headers[dim].Add(tags);
             for (int i = 0; i < tags.Length; i++)
             {
-                if (!tagDictionary.ContainsKey(tags[i]))
+                if (!tagsEnabled[dim].ContainsKey(tags[i]))
                 {
-                    tagDictionary.Add(tags[i], true);
+                    tagsEnabled[dim].Add(tags[i], true);
                 }
             }
-            enabledList.Add(tags.All(tag => tagDictionary[tag]));
+            headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));
         }
 
-        private static void SetAxisTagEnabled(List<string[]> headersList, List<bool> enabledList, Dictionary<string, bool> tagDictionary, string key, bool value)
+        private void SetAxisTagEnabled(int dim, string key, bool value)
         {
-            if (tagDictionary[key] == value)
+            if (tagsEnabled[dim][key] == value)
                 return;
 
-            tagDictionary[key] = value;
-            for (int i = 0; i < headersList.Count; i++)
+            tagsEnabled[dim][key] = value;
+            for (int i = 0; i < headers[dim].Count; i++)
             {
-                enabledList[i] = headersList[i].All(tag => tagDictionary[tag]);
+                headersEnabled[dim][i] = headers[dim][i].All(tag => tagsEnabled[dim][tag]);
             }
         }
     }
