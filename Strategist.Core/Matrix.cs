@@ -1,5 +1,4 @@
-﻿using System;
-using Strategist.Core.Utils;
+﻿using Strategist.Core.Utils;
 using System.Collections.Generic;
 using System.Linq;
 

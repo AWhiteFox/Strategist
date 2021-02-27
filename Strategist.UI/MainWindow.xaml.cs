@@ -8,7 +8,7 @@ namespace Strategist.UI
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public bool MaxThresholdSelected => RbMax.IsChecked.HasValue && RbMax.IsChecked.Value;
         public bool MedianThresholdSelected => RbMedian.IsChecked.HasValue && RbMedian.IsChecked.Value;

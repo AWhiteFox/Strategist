@@ -40,6 +40,6 @@ namespace Strategist.Core.Utils
 
     internal static class Pair
     {
-        public static Pair<T> FromFunc<T>(Func<int, T> func) => new Pair<T>() { First = func.Invoke(0), Second = func.Invoke(1) };
+        public static Pair<T> FromFunc<T>(Func<int, T> func) => new Pair<T> { First = func.Invoke(0), Second = func.Invoke(1) };
     }
 }
