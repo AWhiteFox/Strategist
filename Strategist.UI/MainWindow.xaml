@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Strategist.UI.ViewModels"
         mc:Ignorable="d"    
-        Title="MainWindow"
-        Name="Window"
+        Title="Strategist"
         Height="600" Width="1000"
         MinHeight="200" MinWidth="800" 
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
@@ -30,9 +29,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Content="Список угроз:"/>
+            <Label Grid.Row="0" Content="Список стратегий:"/>
             <ListBox Grid.Row="1"
-                     ItemsSource="{Binding Matrix.ColumnTags}"
+                     ItemsSource="{Binding Matrix.RowTags}"
                      BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
@@ -46,11 +45,11 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Command="{Binding SwitchAllColumnTagsCommand}"/>
-
-            <Label Grid.Row="3" Content="Список средств защиты (СЗ):"/>
+                    Command="{Binding SwitchAllRowTagsCommand}"/>
+            
+            <Label Grid.Row="3" Content="Список контрстратегий:"/>
             <ListBox Grid.Row="4"
-                     ItemsSource="{Binding Matrix.RowTags}"
+                     ItemsSource="{Binding Matrix.ColumnTags}"
                      BorderBrush="DimGray"
                      Background="WhiteSmoke">
                 <ListBox.ItemTemplate>
@@ -64,7 +63,8 @@
                     Content="Все"
                     Padding="0 4"
                     Margin="0,5,0,0"
-                    Command="{Binding SwitchAllRowTagsCommand}"/>
+                    Command="{Binding SwitchAllColumnTagsCommand}"/>
+            
         </Grid>
 
         <!-- Right Side -->
@@ -92,7 +92,7 @@
                     </Style>
                 </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Средства защиты (СЗ)" 
+                    <DataGridTextColumn Header="Стратегия" 
                                         Binding="{Binding Header}"
                                         Width="Auto"/>
                     <!-- Other columns are generated in the code behind -->
@@ -122,11 +122,11 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                    <Button Grid.Row="0" Content="Поиск наилучшей комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
                             Command="{Binding FindBestRowCommand}"/>
-                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                    <Button Grid.Row="1" Content="Дополнение выбранной комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
                             IsEnabled="False"/>
-                    <Button Grid.Row="2" Content="Оценка выбранной комбинации СЗ" Margin="0,0,0,5" Padding="0 5" 
+                    <Button Grid.Row="2" Content="Оценка выбранной комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
                             IsEnabled="False"/>
                 </Grid>
             </Grid>

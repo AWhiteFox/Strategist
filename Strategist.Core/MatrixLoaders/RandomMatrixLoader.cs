@@ -23,7 +23,7 @@ namespace Strategist.Core.MatrixLoaders
 
             for (int i = 0; i < width; i++)
             {
-                m.AddColumn(new[] { $"Угроза {i}" });
+                m.AddColumn(new[] { $"Контрстратегия {i}" });
             }
 
             var rows = new Dictionary<string, double[]>();
@@ -31,7 +31,7 @@ namespace Strategist.Core.MatrixLoaders
             {
                 var arr = new double[width];
                 arr.Fill(_ => Math.Round(rnd.NextDouble(), 2));
-                rows[$"Средство {i}"] = arr;
+                rows[$"Стратегия {i}"] = arr;
             }
 
             foreach (var row in rows.Keys.ToArray().Combinations())
