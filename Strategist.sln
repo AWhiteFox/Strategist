@@ -1,8 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategist.UI", "Strategist.UI\Strategist.UI.csproj", "{5C71BC79-B5A0-431D-8AE1-39166CA57A55}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategist.Core", "Strategist.Core\Strategist.Core.csproj", "{4765F9A4-A0F6-4FBB-B9C6-A8A740A70BD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strategist.Loaders", "Strategist.Loaders\Strategist.Loaders.csproj", "{11665913-A9FD-429C-849A-1C37994C30D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +23,10 @@ Global
 		{4765F9A4-A0F6-4FBB-B9C6-A8A740A70BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4765F9A4-A0F6-4FBB-B9C6-A8A740A70BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4765F9A4-A0F6-4FBB-B9C6-A8A740A70BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11665913-A9FD-429C-849A-1C37994C30D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11665913-A9FD-429C-849A-1C37994C30D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11665913-A9FD-429C-849A-1C37994C30D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11665913-A9FD-429C-849A-1C37994C30D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
