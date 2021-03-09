@@ -29,8 +29,8 @@ namespace Strategist.Core
 
         public double this[IEnumerable<string> columnHeaders, IEnumerable<string> rowHeaders]
         {
-            get => values[headersDictionaries[1][GetHeadersHashCode(columnHeaders)]][headersDictionaries[0][GetHeadersHashCode(rowHeaders)]];
-            set => values[headersDictionaries[1][GetHeadersHashCode(columnHeaders)]][headersDictionaries[0][GetHeadersHashCode(rowHeaders)]] = value;
+            get => values[headersDictionaries[1][GetHeadersHashCode(rowHeaders)]][headersDictionaries[0][GetHeadersHashCode(columnHeaders)]];
+            set => values[headersDictionaries[1][GetHeadersHashCode(rowHeaders)]][headersDictionaries[0][GetHeadersHashCode(columnHeaders)]] = value;
         }
 
         public Matrix()
