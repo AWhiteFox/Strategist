@@ -10,6 +10,7 @@ namespace Strategist.Core
         private readonly Pair<List<string[]>> headers;
         private readonly Pair<List<bool>> headersEnabled;
         private readonly Pair<Dictionary<string, bool>> tagsEnabled;
+        private readonly Pair<Dictionary<int, int>> headersDictionaries;
 
         public int Width => values.Count > 0 ? values[0].Count : 0;
         public int Height => values.Count;
@@ -26,12 +27,19 @@ namespace Strategist.Core
             set => values[j][i] = value;
         }
 
+        public double this[IEnumerable<string> columnHeaders, IEnumerable<string> rowHeaders]
+        {
+            get => values[headersDictionaries[1][GetHeadersHashCode(columnHeaders)]][headersDictionaries[0][GetHeadersHashCode(rowHeaders)]];
+            set => values[headersDictionaries[1][GetHeadersHashCode(columnHeaders)]][headersDictionaries[0][GetHeadersHashCode(rowHeaders)]] = value;
+        }
+
         public Matrix()
         {
             values = new List<List<double>>();
             headers = Pair.FromFunc(_ => new List<string[]>());
             headersEnabled = Pair.FromFunc(_ => new List<bool>());
             tagsEnabled = Pair.FromFunc(_ => new Dictionary<string, bool>());
+            headersDictionaries = Pair.FromFunc(_ => new Dictionary<int, int>());
         }
 
         public void SetColumnTagEnabled(string key, bool value) => SetAxisTagEnabled(0, key, value);
@@ -53,6 +61,7 @@ namespace Strategist.Core
                 }
             }
             headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));
+            headersDictionaries[dim].Add(GetHeadersHashCode(tags.Distinct()), headersDictionaries[dim].Count);
             if (dim == 0)
             {
                 foreach (var t in values)
@@ -76,6 +85,11 @@ namespace Strategist.Core
             {
                 headersEnabled[dim][i] = headers[dim][i].All(tag => tagsEnabled[dim][tag]);
             }
+        }
+
+        private static int GetHeadersHashCode(IEnumerable<string> headers)
+        {
+            return headers.Aggregate(0, (current, element) => current ^ element.GetHashCode());
         }
     }
 }
