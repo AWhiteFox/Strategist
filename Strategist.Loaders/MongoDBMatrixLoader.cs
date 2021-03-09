@@ -48,14 +48,14 @@ namespace Strategist.Core.MatrixLoaders
 
         public void GetDatabase(string connectionString, string databaseName)
         {
-            Console.WriteLine("Подключение...");
+            //Console.WriteLine("Подключение...");
             client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
-            Console.WriteLine("Соединение установленно!\n\nПолучение коллекций...");
+            //Console.WriteLine("Соединение установленно!\n\nПолучение коллекций...");
             counter_strategiesCollection = database.GetCollection<StrategyModel>("counter_strategies");
             strategiesCollection = database.GetCollection<StrategyModel>("strategies");
             probabilitiesCollection = database.GetCollection<ProbabilityModel>("probabilities");
-            Console.WriteLine("Коллекции извлечены!\n");
+            //Console.WriteLine("Коллекции извлечены!\n");
         }
 
         private string FindStrategyName(List<StrategyModel> strategies, ObjectId id)
@@ -70,7 +70,7 @@ namespace Strategist.Core.MatrixLoaders
 
         private async Task ExtractDocuments()
         {
-            Console.WriteLine("Извлечение документов...");
+            //Console.WriteLine("Извлечение документов...");
             var filter = new BsonDocument();
             using (var cursor = await counter_strategiesCollection.FindAsync(filter))
             {
@@ -105,7 +105,7 @@ namespace Strategist.Core.MatrixLoaders
                     }
                 }
             }
-            Console.WriteLine("Документы извлечены!");
+            //Console.WriteLine("Документы извлечены!");
         }
     }
 
