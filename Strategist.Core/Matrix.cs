@@ -50,9 +50,9 @@ namespace Strategist.Core
 
         public void AddRow(string[] tags) => AddAxis(1, tags);
 
-        private void AddAxis(int dim, string[] tags)
+        private void AddAxis(int dim, ICollection<string> tags)
         {
-            headers[dim].Add(tags);
+            headers[dim].Add(tags.ToArray());
             foreach (string t in tags)
             {
                 if (!tagsEnabled[dim].ContainsKey(t))
