@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Strategist.Core
 {
     public static class MatrixMath
     {
-        public static int FindBestRow(Matrix matrix, double[] thresholds)
+        public static int FindBestRow(Matrix matrix, IList<double> thresholds)
         {
             int best = -1;
             for (int i = 0; i < matrix.Height; i++)
@@ -17,14 +16,10 @@ namespace Strategist.Core
                 bool flag = true;
                 for (int j = 0; j < matrix.Width; j++)
                 {
-                    if (!matrix.ColumnsEnabled[j])
+                    if (!matrix.ColumnsEnabled[j] || matrix[j, i] >= thresholds[j]) 
                         continue;
-
-                    if (matrix[j, i] < thresholds[j])
-                    {
-                        flag = false;
-                        break;
-                    }
+                    flag = false;
+                    break;
                 }
                 if (flag && (best == -1 || matrix.RowHeaders[i].Count < matrix.RowHeaders[best].Count))
                 {
@@ -32,11 +27,6 @@ namespace Strategist.Core
                 }
             }
             return best;
-        }
-
-        public static int FindBestRow(Matrix matrix, double threshold)
-        {
-            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.Width).ToArray());
         }
 
         public static double[] GetColumnMaximums(Matrix matrix)

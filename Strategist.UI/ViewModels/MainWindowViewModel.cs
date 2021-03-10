@@ -1,4 +1,5 @@
-﻿using Strategist.Core;
+﻿using System.Linq;
+using Strategist.Core;
 
 namespace Strategist.UI.ViewModels
 {
@@ -30,7 +31,7 @@ namespace Strategist.UI.ViewModels
             else if (window.MedianThresholdSelected)
                 result = MatrixMath.FindBestRow(matrix, MatrixMath.GetColumnMedians(matrix));
             else if (window.CustomThresholdSelected && window.TryGetCustomThreshold(out double val))
-                result = MatrixMath.FindBestRow(matrix, val);
+                result = MatrixMath.FindBestRow(matrix, Enumerable.Repeat(val, matrix.Width).ToArray());
             else
                 return;
             window.ShowMessage("Результат", result == -1 ? "Нет решения" : Matrix.Rows[result].Header);
