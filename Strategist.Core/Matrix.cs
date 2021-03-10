@@ -12,6 +12,7 @@ namespace Strategist.Core
         private readonly Pair<List<bool>> headersEnabled;
         private readonly Pair<Dictionary<string, bool>> tagsEnabled;
         private readonly Pair<Dictionary<int, int>> headerToIndex;
+        private readonly Pair<bool> hasCombinedHeaders;
 
         public int Width => values.Count > 0 ? values[0].Count : 0;
         public int Height => values.Count;
@@ -21,6 +22,8 @@ namespace Strategist.Core
         public IReadOnlyList<bool> RowsEnabled => headersEnabled[1];
         public IReadOnlyDictionary<string, bool> ColumnTags => tagsEnabled[0];
         public IReadOnlyDictionary<string, bool> RowTags => tagsEnabled[1];
+        public bool HasCombinedColumnHeaders => hasCombinedHeaders[0];
+        public bool HasCombinedRowHeaders => hasCombinedHeaders[1];
 
         public double this[int i, int j]
         {
@@ -41,6 +44,7 @@ namespace Strategist.Core
             headersEnabled = Pair.FromFunc(_ => new List<bool>());
             tagsEnabled = Pair.FromFunc(_ => new Dictionary<string, bool>());
             headerToIndex = Pair.FromFunc(_ => new Dictionary<int, int>());
+            hasCombinedHeaders = Pair.FromFunc(_ => false);
         }
 
         public void SetColumnTagEnabled(string key, bool value) => SetAxisTagEnabled(0, key, value);
@@ -60,6 +64,9 @@ namespace Strategist.Core
             string[] tags = header.Distinct().ToArray();
             if (ContainsAxis(dim, tags))
                 throw new ArgumentException("An element with the same header already exists.");
+
+            if (tags.Length > 1)
+                hasCombinedHeaders[dim] = true;
             
             headers[dim].Add(tags);
             foreach (string t in tags)
