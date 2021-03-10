@@ -26,7 +26,7 @@ namespace Strategist.Core
                         break;
                     }
                 }
-                if (flag && (best == -1 || matrix.RowHeaders[i].Length < matrix.RowHeaders[best].Length))
+                if (flag && (best == -1 || matrix.RowHeaders[i].Count < matrix.RowHeaders[best].Count))
                 {
                     best = i;
                 }

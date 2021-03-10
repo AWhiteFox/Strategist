@@ -1,6 +1,7 @@
 ﻿using Strategist.Core;
 using Strategist.UI.Abstractions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Strategist.UI.ViewModels
@@ -17,7 +18,7 @@ namespace Strategist.UI.ViewModels
         {
             this.matrix = matrix;
             this.index = index;
-            string[] tags = matrix.ColumnHeaders[index];
+            var tags = matrix.ColumnHeaders[index];
             foreach (string t in tags)
             {
                 Array.Find(tagsArr, x => x.Title == t).PropertyChanged += OnTagIsEnabledChanged;
