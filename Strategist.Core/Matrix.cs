@@ -10,12 +10,12 @@ namespace Strategist.Core
         private readonly Pair<List<string[]>> headers;
         private readonly Pair<List<bool>> headersEnabled;
         private readonly Pair<Dictionary<string, bool>> tagsEnabled;
-        private readonly Pair<Dictionary<int, int>> headersDictionaries;
+        private readonly Pair<Dictionary<int, int>> headerToIndex;
 
         public int Width => values.Count > 0 ? values[0].Count : 0;
         public int Height => values.Count;
-        public IReadOnlyList<string[]> ColumnHeaders => headers[0];
-        public IReadOnlyList<string[]> RowHeaders => headers[1];
+        public IReadOnlyList<IReadOnlyList<string>> ColumnHeaders => headers[0];
+        public IReadOnlyList<IReadOnlyList<string>> RowHeaders => headers[1];
         public IReadOnlyList<bool> ColumnsEnabled => headersEnabled[0];
         public IReadOnlyList<bool> RowsEnabled => headersEnabled[1];
         public IReadOnlyDictionary<string, bool> ColumnTags => tagsEnabled[0];
@@ -29,8 +29,8 @@ namespace Strategist.Core
 
         public double this[IEnumerable<string> columnHeaders, IEnumerable<string> rowHeaders]
         {
-            get => values[headersDictionaries[1][GetHeadersHashCode(rowHeaders)]][headersDictionaries[0][GetHeadersHashCode(columnHeaders)]];
-            set => values[headersDictionaries[1][GetHeadersHashCode(rowHeaders)]][headersDictionaries[0][GetHeadersHashCode(columnHeaders)]] = value;
+            get => values[headerToIndex[1][GetHeaderHashCode(rowHeaders)]][headerToIndex[0][GetHeaderHashCode(columnHeaders)]];
+            set => values[headerToIndex[1][GetHeaderHashCode(rowHeaders)]][headerToIndex[0][GetHeaderHashCode(columnHeaders)]] = value;
         }
 
         public Matrix()
@@ -39,16 +39,16 @@ namespace Strategist.Core
             headers = Pair.FromFunc(_ => new List<string[]>());
             headersEnabled = Pair.FromFunc(_ => new List<bool>());
             tagsEnabled = Pair.FromFunc(_ => new Dictionary<string, bool>());
-            headersDictionaries = Pair.FromFunc(_ => new Dictionary<int, int>());
+            headerToIndex = Pair.FromFunc(_ => new Dictionary<int, int>());
         }
 
         public void SetColumnTagEnabled(string key, bool value) => SetAxisTagEnabled(0, key, value);
 
         public void SetRowTagEnabled(string key, bool value) => SetAxisTagEnabled(1, key, value);
 
-        public void AddColumn(string[] tags) => AddAxis(0, tags);
+        public void AddColumn(ICollection<string> tags) => AddAxis(0, tags);
 
-        public void AddRow(string[] tags) => AddAxis(1, tags);
+        public void AddRow(ICollection<string> tags) => AddAxis(1, tags);
 
         private void AddAxis(int dim, ICollection<string> tags)
         {
@@ -61,7 +61,7 @@ namespace Strategist.Core
                 }
             }
             headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));
-            headersDictionaries[dim].Add(GetHeadersHashCode(tags.Distinct()), headersDictionaries[dim].Count);
+            headerToIndex[dim].Add(GetHeaderHashCode(tags.Distinct()), headerToIndex[dim].Count);
             if (dim == 0)
             {
                 foreach (var t in values)
@@ -87,9 +87,6 @@ namespace Strategist.Core
             }
         }
 
-        private static int GetHeadersHashCode(IEnumerable<string> headers)
-        {
-            return headers.Aggregate(0, (current, element) => current ^ element.GetHashCode());
-        }
+        private static int GetHeaderHashCode(IEnumerable<string> tags) => tags.Aggregate(0, (current, element) => current ^ element.GetHashCode());
     }
 }
