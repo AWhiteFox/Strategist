@@ -1,4 +1,5 @@
-﻿using Strategist.Core.Utils;
+﻿using System;
+using Strategist.Core.Utils;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,13 +47,21 @@ namespace Strategist.Core
 
         public void SetRowTagEnabled(string key, bool value) => SetAxisTagEnabled(1, key, value);
 
-        public void AddColumn(ICollection<string> tags) => AddAxis(0, tags);
+        public void AddColumn(IEnumerable<string> header) => AddAxis(0, header);
 
-        public void AddRow(ICollection<string> tags) => AddAxis(1, tags);
+        public void AddRow(IEnumerable<string> header) => AddAxis(1, header);
 
-        private void AddAxis(int dim, ICollection<string> tags)
+        public bool ContainsColumn(IEnumerable<string> header) => ContainsAxis(0, header);
+
+        public bool ContainsRow(IEnumerable<string> header) => ContainsAxis(1, header);
+
+        private void AddAxis(int dim, IEnumerable<string> header)
         {
-            headers[dim].Add(tags.ToArray());
+            string[] tags = header.Distinct().ToArray();
+            if (ContainsAxis(dim, tags))
+                throw new ArgumentException("An element with the same header already exists.");
+            
+            headers[dim].Add(tags);
             foreach (string t in tags)
             {
                 if (!tagsEnabled[dim].ContainsKey(t))
@@ -61,7 +70,7 @@ namespace Strategist.Core
                 }
             }
             headersEnabled[dim].Add(tags.All(tag => tagsEnabled[dim][tag]));
-            headerToIndex[dim].Add(GetHeaderHashCode(tags.Distinct()), headerToIndex[dim].Count);
+            headerToIndex[dim].Add(GetHeaderHashCode(tags), headerToIndex[dim].Count);
             if (dim == 0)
             {
                 foreach (var t in values)
@@ -87,6 +96,8 @@ namespace Strategist.Core
             }
         }
 
-        private static int GetHeaderHashCode(IEnumerable<string> tags) => tags.Aggregate(0, (current, element) => current ^ element.GetHashCode());
+        private bool ContainsAxis(int dim, IEnumerable<string> header) => headerToIndex[dim].ContainsKey(GetHeaderHashCode(header));
+
+        private static int GetHeaderHashCode(IEnumerable<string> header) => header.Aggregate(0, (current, element) => current ^ element.GetHashCode());
     }
 }
