@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Strategist.Core.Extensions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
@@ -11,39 +10,58 @@ namespace Strategist.Core.MatrixLoaders
     {
         MongoClient client;
         IMongoDatabase database;
-        Matrix matrix;
+        public Matrix MainMatrix { get; private set; }
 
-        IMongoCollection<StrategyModel> counter_strategiesCollection;
+        IMongoCollection<StrategyModel> counterStrategiesCollection;
         IMongoCollection<StrategyModel> strategiesCollection;
         IMongoCollection<ProbabilityModel> probabilitiesCollection;
 
-        List<StrategyModel> counter_strategies = new List<StrategyModel>();
+        List<StrategyModel> counterStrategies = new List<StrategyModel>();
         List<StrategyModel> strategies = new List<StrategyModel>();
         List<ProbabilityModel> probabilities = new List<ProbabilityModel>();
 
         public MongoDBMatrixLoader(string connectionString, string databaseName)
         {
-            matrix = new Matrix();
+            MainMatrix = new Matrix();
             GetDatabase(connectionString, databaseName);
         }
 
-        public void GenerateMatrix()
+        public Matrix GenerateMatrix()
         {
-            for (int i = 0; i < probabilities.Count; i++)
+            string[] namesStrategies = new string[strategies.Count];
+            string[] namesСounterStrategies = new string[counterStrategies.Count];
+
+            for (int i = 0; i < namesStrategies.Length; i++)
+                namesStrategies[i] = strategies[i].Name;
+
+            for (int i = 0; i < namesСounterStrategies.Length; i++)
+                namesСounterStrategies[i] = counterStrategies[i].Name;
+
+            foreach (var row in namesStrategies.Combinations())
+                MainMatrix.AddRow(row.ToArray());
+
+            foreach (var row in namesСounterStrategies.Combinations())
+                MainMatrix.AddColumn(row.ToArray());
+
+
+            /*for (int i = 0; i < probabilities.Count; i++)
             {
                 for (int j = 0; j < probabilities[i].CounterStrategies.Length; j++)
                 {
-                    //FindStrategyName(counter_strategies, probabilities[i].CounterStrategies[j]);
+                    FindStrategyName(counterStrategies, probabilities[i].CounterStrategies[j]);
+
                 }
-            }
+            }*/
+
+            return MainMatrix;
         }
 
         public void UpdateDocuments()
         {
-            counter_strategies.Clear();
+            counterStrategies.Clear();
             strategies.Clear();
             probabilities.Clear();
-            ExtractDocuments().GetAwaiter().GetResult();
+            ExtractDocuments();
         }
 
         public void GetDatabase(string connectionString, string databaseName)
@@ -52,10 +70,12 @@ namespace Strategist.Core.MatrixLoaders
             client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
             //Console.WriteLine("Соединение установленно!\n\nПолучение коллекций...");
-            counter_strategiesCollection = database.GetCollection<StrategyModel>("counter_strategies");
+            counterStrategiesCollection = database.GetCollection<StrategyModel>("counter_strategies");
             strategiesCollection = database.GetCollection<StrategyModel>("strategies");
             probabilitiesCollection = database.GetCollection<ProbabilityModel>("probabilities");
             //Console.WriteLine("Коллекции извлечены!\n");
+
+            UpdateDocuments();
         }
 
         private string FindStrategyName(List<StrategyModel> strategies, ObjectId id)
@@ -68,42 +88,25 @@ namespace Strategist.Core.MatrixLoaders
             return null;
         }
 
-        private async Task ExtractDocuments()
+        private void ExtractDocuments()
         {
             //Console.WriteLine("Извлечение документов...");
-            var filter = new BsonDocument();
-            using (var cursor = await counter_strategiesCollection.FindAsync(filter))
+            var strategiesFilter = Builders<StrategyModel>.Filter.Empty;
+            var probabilitiesFilter = Builders<ProbabilityModel>.Filter.Empty;
+            var docs = counterStrategiesCollection.Find(strategiesFilter).ToList();
+            foreach (StrategyModel doc in docs)
             {
-                while (await cursor.MoveNextAsync())
-                {
-                    var cs = cursor.Current;
-                    foreach (StrategyModel doc in cs)
-                    {
-                        counter_strategies.Add(doc);
-                    }
-                }
+                counterStrategies.Add(doc);
             }
-            using (var cursor = await strategiesCollection.FindAsync(filter))
+            docs = strategiesCollection.Find(strategiesFilter).ToList();
+            foreach (StrategyModel doc in docs)
             {
-                while (await cursor.MoveNextAsync())
-                {
-                    var s = cursor.Current;
-                    foreach (StrategyModel doc in s)
-                    {
-                        strategies.Add(doc);
-                    }
-                }
+                strategies.Add(doc);
             }
-            using (var cursor = await probabilitiesCollection.FindAsync(filter))
+            var probDocs = probabilitiesCollection.Find(probabilitiesFilter).ToList();
+            foreach (ProbabilityModel doc in probDocs)
             {
-                while (await cursor.MoveNextAsync())
-                {
-                    var prob = cursor.Current;
-                    foreach (ProbabilityModel doc in prob)
-                    {
-                        probabilities.Add(doc);
-                    }
-                }
+                probabilities.Add(doc);
             }
             //Console.WriteLine("Документы извлечены!");
         }
