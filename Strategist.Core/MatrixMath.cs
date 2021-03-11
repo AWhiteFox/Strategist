@@ -23,11 +23,11 @@ namespace Strategist.Core
             return matrix.HasCombinedColumnHeaders ? ImproveRowByColumn(matrix, thresholds) : ImproveRowByComparison(matrix, thresholds);
         }
 
-        public static int AnalyzeRow(Matrix matrix, IList<double> thresholds, int row)
+        public static List<int> AnalyzeRow(Matrix matrix, IList<double> thresholds)
         {
             if (!matrix.HasCombinedRowHeaders)
                 throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
-            return matrix.HasCombinedColumnHeaders ? AnalyzeRowByColumn(matrix, thresholds, row) : AnalyzeRowByComparison(matrix, thresholds, row);
+            return AnalyzeRowByComparison(matrix, thresholds);
         }
         
         public static double[] GetColumnMaximums(Matrix matrix, bool ignoreDisabledRows = false)
@@ -178,14 +178,20 @@ namespace Strategist.Core
             return best;
         }
         
-        private static int AnalyzeRowByComparison(Matrix matrix, IList<double> thresholds, int row)
+        private static List<int> AnalyzeRowByComparison(Matrix matrix, IList<double> thresholds)
         {
-            throw new NotImplementedException();
-        }
-        
-        private static int AnalyzeRowByColumn(Matrix matrix, IList<double> thresholds, int row)
-        {
-            throw new NotImplementedException();
+            int row = GetFullRow(matrix);
+            var results = new List<int>();
+            
+            for (int i = 0; i < matrix.Width; i++)
+            {
+                if (matrix[i, row] >= thresholds[i])
+                {
+                    results.Add(i);
+                }
+            }
+            
+            return results;
         }
 
         private static int GetFullColumn(Matrix matrix)
