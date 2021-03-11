@@ -1,4 +1,6 @@
-﻿using Strategist.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Strategist.Core;
 
 namespace Strategist.UI.ViewModels
 {
@@ -10,6 +12,8 @@ namespace Strategist.UI.ViewModels
         public RelayCommand SwitchAllColumnTagsCommand { get; }
         public RelayCommand SwitchAllRowTagsCommand { get; }
         public RelayCommand FindBestRowCommand { get; }
+        public RelayCommand ImproveRowCommand { get; }
+        public RelayCommand AnalyzeRowCommand { get; }
 
         public MainWindowViewModel(MainWindow window)
         {
@@ -19,21 +23,45 @@ namespace Strategist.UI.ViewModels
             SwitchAllColumnTagsCommand = new RelayCommand(_ => Matrix.SwitchAllColumnTags());
             SwitchAllRowTagsCommand = new RelayCommand(_ => Matrix.SwitchAllRowTags());
             FindBestRowCommand = new RelayCommand(_ => OnFindBestRowCommand());
+            ImproveRowCommand = new RelayCommand(_ => OnImproveRowCommand());
+            AnalyzeRowCommand = new RelayCommand(_ => OnAnalyzeRowCommand());
+        }
+
+        private IList<double> GetThresholds(bool ignoreDisabledRows = false)
+        {
+            var matrix = Matrix.Matrix;
+            if (window.MaxThresholdSelected)
+                return MatrixMath.GetColumnMaximums(matrix, ignoreDisabledRows);
+            if (window.MedianThresholdSelected)
+                return MatrixMath.GetColumnMedians(matrix, ignoreDisabledRows);
+            if (window.CustomThresholdSelected && window.TryGetCustomThreshold(out double val))
+                return Enumerable.Repeat(val, matrix.Width).ToArray();
+            return null;
         }
 
         private void OnFindBestRowCommand()
         {
-            var matrix = Matrix.Matrix;
-            int result;
-            if (window.MaxThresholdSelected)
-                result = MatrixMath.FindBestRow(matrix, MatrixMath.GetColumnMaximums(matrix));
-            else if (window.MedianThresholdSelected)
-                result = MatrixMath.FindBestRow(matrix, MatrixMath.GetColumnMedians(matrix));
-            else if (window.CustomThresholdSelected && window.TryGetCustomThreshold(out double val))
-                result = MatrixMath.FindBestRow(matrix, val);
-            else
+            int result = MatrixMath.FindBestRow(Matrix.Matrix, GetThresholds());
+            window.ShowMessage("Результат", result == -1 ? "Нет решения" : "Оптимальный набор:\n" +  Matrix.Rows[result].Header);
+        }
+
+        private void OnImproveRowCommand()
+        {
+            int result = MatrixMath.ImproveRow(Matrix.Matrix, GetThresholds(true));
+            window.ShowMessage("Результат", result == -1 ? "Нет решения" : "Улучшенный набор:\n" + Matrix.Rows[result].Header);
+            if (result == -1)
                 return;
-            window.ShowMessage("Результат", result == -1 ? "Нет решения" : Matrix.Rows[result].Header);
+            foreach (string tag in Matrix.Rows[result].Tags)
+            {
+                Matrix.RowTags.First(x => x.Title == tag).IsEnabled = true;
+            }
+        }
+
+        private void OnAnalyzeRowCommand()
+        {
+            var results = MatrixMath.AnalyzeRow(Matrix.Matrix, GetThresholds(true));
+            var message = "Выбранный набор стратегий лучше всего защищает от:\n\n" + string.Join("\n", results.Select(x => Matrix.Columns[x].Header));
+            window.ShowMessage("Результат", results.Count == 0 ? "Выбранный набор стратегий полностью не соответствует заданным критериям" : message);
         }
     }
 }

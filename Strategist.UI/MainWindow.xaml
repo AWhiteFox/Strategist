@@ -125,9 +125,9 @@
                     <Button Grid.Row="0" Content="Поиск наилучшей комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
                             Command="{Binding FindBestRowCommand}"/>
                     <Button Grid.Row="1" Content="Дополнение выбранной комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
-                            IsEnabled="False"/>
+                            Command="{Binding ImproveRowCommand}"/>
                     <Button Grid.Row="2" Content="Оценка выбранной комбинации стратегий" Margin="0,0,0,5" Padding="0 5" 
-                            IsEnabled="False"/>
+                            Command="{Binding AnalyzeRowCommand}"/>
                 </Grid>
             </Grid>
         </Grid>

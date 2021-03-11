@@ -6,40 +6,31 @@ namespace Strategist.Core
 {
     public static class MatrixMath
     {
-        public static int FindBestRow(Matrix matrix, double[] thresholds)
+        private const string MatrixMustHaveRowCombinationsMessage = "Матрица должна содержать комбинации строк.";
+        private const string MatrixDoesNotHaveEnoughData = "Матрица не содержит достаточное количество данных.";
+        
+        public static int FindBestRow(Matrix matrix, IList<double> thresholds)
         {
-            int best = -1;
-            for (int i = 0; i < matrix.Height; i++)
-            {
-                if (!matrix.RowsEnabled[i])
-                    continue;
-
-                bool flag = true;
-                for (int j = 0; j < matrix.Width; j++)
-                {
-                    if (!matrix.ColumnsEnabled[j])
-                        continue;
-
-                    if (matrix[j, i] < thresholds[j])
-                    {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (flag && (best == -1 || matrix.RowHeaders[i].Count < matrix.RowHeaders[best].Count))
-                {
-                    best = i;
-                }
-            }
-            return best;
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return matrix.HasCombinedColumnHeaders ? FindBestRowByColumn(matrix, thresholds) : FindBestRowByComparison(matrix, thresholds);
         }
 
-        public static int FindBestRow(Matrix matrix, double threshold)
+        public static int ImproveRow(Matrix matrix, IList<double> thresholds)
         {
-            return FindBestRow(matrix, Enumerable.Repeat(threshold, matrix.Width).ToArray());
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return matrix.HasCombinedColumnHeaders ? ImproveRowByColumn(matrix, thresholds) : ImproveRowByComparison(matrix, thresholds);
         }
 
-        public static double[] GetColumnMaximums(Matrix matrix)
+        public static List<int> AnalyzeRow(Matrix matrix, IList<double> thresholds)
+        {
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return AnalyzeRowByComparison(matrix, thresholds);
+        }
+        
+        public static double[] GetColumnMaximums(Matrix matrix, bool ignoreDisabledRows = false)
         {
             var maximums = new double[matrix.Width];
             for (int i = 0; i < matrix.Width; i++)
@@ -49,7 +40,7 @@ namespace Strategist.Core
                     double max = 0;
                     for (int j = 0; j < matrix.Height; j++)
                     {
-                        if (matrix.RowsEnabled[j])
+                        if (ignoreDisabledRows || matrix.RowsEnabled[j])
                         {
                             max = Math.Max(max, matrix[i, j]);
                         }
@@ -64,7 +55,7 @@ namespace Strategist.Core
             return maximums;
         }
 
-        public static double[] GetColumnMedians(Matrix matrix)
+        public static double[] GetColumnMedians(Matrix matrix, bool ignoreDisabledRows = false)
         {
             var medians = new double[matrix.Width];
             var values = new List<double>();
@@ -75,7 +66,7 @@ namespace Strategist.Core
                     values.Clear();
                     for (int j = 0; j < matrix.Height; j++)
                     {  
-                        if (matrix.RowsEnabled[j])
+                        if (ignoreDisabledRows || matrix.RowsEnabled[j])
                         {
                             values.Add(matrix[i, j]);
                         }
@@ -96,6 +87,127 @@ namespace Strategist.Core
                 }
             }
             return medians;
+        }
+
+        private static int FindBestRowByComparison(Matrix matrix, IList<double> thresholds)
+        {
+            int best = -1;
+            for (int i = 0; i < matrix.Height; i++)
+            {
+                if (!matrix.RowsEnabled[i])
+                    continue;
+
+                bool flag = true;
+                for (int j = 0; j < matrix.Width; j++)
+                {
+                    if (!matrix.ColumnsEnabled[j] || matrix[j, i] >= thresholds[j]) 
+                        continue;
+                    flag = false;
+                    break;
+                }
+                if (flag && (best == -1 || matrix.RowHeaders[i].Count < matrix.RowHeaders[best].Count))
+                {
+                    best = i;
+                }
+            }
+            return best;
+        }
+
+        private static int FindBestRowByColumn(Matrix matrix, IList<double> thresholds)
+        {
+            int col = GetFullColumn(matrix);
+            int best = -1;
+            for (int j = 0; j < matrix.Height; j++)
+            {
+                if (!matrix.RowsEnabled[j] || matrix[col, j] < thresholds[col])
+                    continue;
+                if (best == -1 || matrix.RowHeaders[j].Count < matrix.RowHeaders[best].Count)
+                    best = j;
+            }
+            return best;
+        }
+
+        private static int ImproveRowByComparison(Matrix matrix, IList<double> thresholds)
+        {
+            int row = GetFullRow(matrix);
+            int best = row;
+            for (int j = 0; j < matrix.Height; j++)
+            {
+                if (!matrix.RowHeaders[row].All(x => matrix.RowHeaders[j].Contains(x)))
+                    continue;
+
+                bool isBetter = false;
+                bool isWorse = false;
+                for (int i = 0; i < matrix.Width; i++)
+                {
+                    if (!matrix.ColumnsEnabled[i]) 
+                        continue;
+                    
+                    if (matrix[i, j] < thresholds[i] && matrix[i, best] >= thresholds[i])
+                    {
+                        isWorse = true;
+                        break;
+                    }
+                    if (matrix[i, j] >= thresholds[i] && matrix[i, best] < thresholds[i])
+                    {
+                        isBetter = true;
+                    }
+                }
+                if (!isWorse && (isBetter || matrix.RowHeaders[j].Count < matrix.RowHeaders[best].Count))
+                    best = j;
+            }
+            return best;
+        }
+
+        private static int ImproveRowByColumn(Matrix matrix, IList<double> thresholds)
+        {
+            int col = GetFullColumn(matrix);
+            int row = GetFullRow(matrix);
+            int best = row;
+            for (int j = 0; j < matrix.Height; j++)
+            {
+                if (!matrix.RowHeaders[row].All(x => matrix.RowHeaders[j].Contains(x)))
+                    continue;
+
+                bool isBetter = matrix[col, j] >= thresholds[col] && matrix[col, best] < thresholds[col];
+                bool isWorse = matrix[col, j] < thresholds[col] && matrix[col, best] >= thresholds[col];
+
+                if (!isWorse && (isBetter || matrix.RowHeaders[j].Count < matrix.RowHeaders[best].Count))
+                    best = j;
+            }
+            return best;
+        }
+        
+        private static List<int> AnalyzeRowByComparison(Matrix matrix, IList<double> thresholds)
+        {
+            int row = GetFullRow(matrix);
+            var results = new List<int>();
+            
+            for (int i = 0; i < matrix.Width; i++)
+            {
+                if (matrix[i, row] >= thresholds[i])
+                {
+                    results.Add(i);
+                }
+            }
+            
+            return results;
+        }
+
+        private static int GetFullColumn(Matrix matrix)
+        {
+            int value = matrix.GetColumnIndex(matrix.ColumnTags.Keys.Where(x => matrix.ColumnTags[x]));
+            if (value == -1)
+                throw new ArgumentException(MatrixDoesNotHaveEnoughData);
+            return value;
+        }
+
+        private static int GetFullRow(Matrix matrix)
+        {
+            int value = matrix.GetRowIndex(matrix.RowTags.Keys.Where(x => matrix.RowTags[x]));
+            if (value == -1)
+                throw new ArgumentException(MatrixDoesNotHaveEnoughData);
+            return value;
         }
     }
 }
