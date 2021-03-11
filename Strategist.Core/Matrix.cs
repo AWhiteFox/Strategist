@@ -22,6 +22,7 @@ namespace Strategist.Core
         public IReadOnlyList<bool> RowsEnabled => headersEnabled[1];
         public IReadOnlyDictionary<string, bool> ColumnTags => tagsEnabled[0];
         public IReadOnlyDictionary<string, bool> RowTags => tagsEnabled[1];
+
         public bool HasCombinedColumnHeaders => hasCombinedHeaders[0];
         public bool HasCombinedRowHeaders => hasCombinedHeaders[1];
 
@@ -33,8 +34,8 @@ namespace Strategist.Core
 
         public double this[IEnumerable<string> columnHeaders, IEnumerable<string> rowHeaders]
         {
-            get => values[headerToIndex[1][GetHeaderHashCode(rowHeaders)]][headerToIndex[0][GetHeaderHashCode(columnHeaders)]];
-            set => values[headerToIndex[1][GetHeaderHashCode(rowHeaders)]][headerToIndex[0][GetHeaderHashCode(columnHeaders)]] = value;
+            get => this[GetColumnIndex(columnHeaders), GetRowIndex(rowHeaders)];
+            set => this[GetColumnIndex(columnHeaders), GetRowIndex(rowHeaders)] = value;
         }
 
         public Matrix()
@@ -55,6 +56,10 @@ namespace Strategist.Core
 
         public void AddRow(IEnumerable<string> header) => AddAxis(1, header);
 
+        public int GetColumnIndex(IEnumerable<string> header) => GetAxisIndex(0, header);
+
+        public int GetRowIndex(IEnumerable<string> header) => GetAxisIndex(1, header);
+        
         public bool ContainsColumn(IEnumerable<string> header) => ContainsAxis(0, header);
 
         public bool ContainsRow(IEnumerable<string> header) => ContainsAxis(1, header);
@@ -102,6 +107,8 @@ namespace Strategist.Core
                 headersEnabled[dim][i] = headers[dim][i].All(tag => tagsEnabled[dim][tag]);
             }
         }
+
+        private int GetAxisIndex(int dim, IEnumerable<string> header) => headerToIndex[dim].TryGetValue(GetHeaderHashCode(header), out int value) ? value : -1;
 
         private bool ContainsAxis(int dim, IEnumerable<string> header) => headerToIndex[dim].ContainsKey(GetHeaderHashCode(header));
 
