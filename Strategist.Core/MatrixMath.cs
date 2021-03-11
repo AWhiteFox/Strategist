@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Strategist.Core
 {
     public static class MatrixMath
     {
         private const string MatrixMustHaveRowCombinationsMessage = "Матрица должна содержать комбинации строк.";
+        private const string MatrixDoesNotHaveEnoughData = "Матрица не содержит достаточное количество данных.";
         
         public static int FindBestRow(Matrix matrix, IList<double> thresholds)
         {
@@ -113,7 +115,16 @@ namespace Strategist.Core
 
         private static int FindBestRowByColumn(Matrix matrix, IList<double> thresholds)
         {
-            throw new NotImplementedException();
+            int col = GetFullColumn(matrix);
+            int best = -1;
+            for (int j = 0; j < matrix.Height; j++)
+            {
+                if (!matrix.RowsEnabled[j] || matrix[col, j] < thresholds[col])
+                    continue;
+                if (best == -1 || matrix.RowHeaders[j].Count < matrix.RowHeaders[best].Count)
+                    best = j;
+            }
+            return best;
         }
 
         private static int ImproveRowByComparison(Matrix matrix, IList<double> thresholds, int row)
@@ -134,6 +145,14 @@ namespace Strategist.Core
         private static int AnalyzeRowByColumn(Matrix matrix, IList<double> thresholds, int row)
         {
             throw new NotImplementedException();
+        }
+
+        private static int GetFullColumn(Matrix matrix)
+        {
+            int value = matrix.GetColumnIndex(matrix.ColumnTags.Keys.Where(x => matrix.ColumnTags[x]));
+            if (value == -1)
+                throw new ArgumentException(MatrixDoesNotHaveEnoughData);
+            return value;
         }
     }
 }
