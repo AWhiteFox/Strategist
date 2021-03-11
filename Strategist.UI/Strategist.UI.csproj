@@ -109,6 +109,10 @@
       <Project>{4765f9a4-a0f6-4fbb-b9c6-a8a740a70bd6}</Project>
       <Name>Strategist.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Strategist.Loaders\Strategist.Loaders.csproj">
+      <Project>{11665913-a9fd-429c-849a-1c37994c30d6}</Project>
+      <Name>Strategist.Loaders</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
