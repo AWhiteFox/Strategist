@@ -61,6 +61,8 @@
     <Compile Include="LoaderSelectWindow.xaml.cs">
       <DependentUpon>LoaderSelectWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MessageBoxHelper.cs" />
+    <Compile Include="ViewModels\LoaderSelectWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Matrix\MatrixColumnTagViewModel.cs" />
     <Compile Include="ViewModels\Matrix\MatrixColumnViewModel.cs" />

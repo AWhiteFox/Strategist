@@ -42,13 +42,13 @@ namespace Strategist.UI.ViewModels
         private void OnFindBestRowCommand()
         {
             int result = MatrixMath.FindBestRow(Matrix.Matrix, GetThresholds());
-            window.ShowMessage("Результат", result == -1 ? "Нет решения" : "Оптимальный набор:\n" +  Matrix.Rows[result].Header);
+            MessageBoxHelper.Info("Результат", result == -1 ? "Нет решения" : "Оптимальный набор:\n" +  Matrix.Rows[result].Header);
         }
 
         private void OnImproveRowCommand()
         {
             int result = MatrixMath.ImproveRow(Matrix.Matrix, GetThresholds(true));
-            window.ShowMessage("Результат", result == -1 ? "Нет решения" : "Улучшенный набор:\n" + Matrix.Rows[result].Header);
+            MessageBoxHelper.Info("Результат", result == -1 ? "Нет решения" : "Улучшенный набор:\n" + Matrix.Rows[result].Header);
             if (result == -1)
                 return;
             foreach (string tag in Matrix.Rows[result].Tags)
@@ -61,7 +61,7 @@ namespace Strategist.UI.ViewModels
         {
             var results = MatrixMath.AnalyzeRow(Matrix.Matrix, GetThresholds(true));
             var message = "Выбранный набор стратегий лучше всего защищает от:\n\n" + string.Join("\n", results.Select(x => Matrix.Columns[x].Header));
-            window.ShowMessage("Результат", results.Count == 0 ? "Выбранный набор стратегий полностью не соответствует заданным критериям" : message);
+            MessageBoxHelper.Info("Результат", results.Count == 0 ? "Выбранный набор стратегий полностью не соответствует заданным критериям" : message);
         }
     }
 }
