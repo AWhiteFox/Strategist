@@ -23,6 +23,15 @@ namespace Strategist.Core
             return ImproveRowByComparison(matrix, thresholds, row);
         }
 
+        public static int AnalyzeRow(Matrix matrix, IList<double> thresholds, int row)
+        {
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException("Матрица должна содержать комбинации строк.");
+            if (matrix.HasCombinedColumnHeaders)
+                return AnalyzeRowByColumn(matrix, thresholds, row);
+            return AnalyzeRowByComparison(matrix, thresholds, row);
+        }
+        
         public static double[] GetColumnMaximums(Matrix matrix)
         {
             var maximums = new double[matrix.Width];
@@ -122,6 +131,16 @@ namespace Strategist.Core
         }
 
         private static int ImproveRowByColumn(Matrix matrix, IList<double> thresholds, int row)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private static int AnalyzeRowByComparison(Matrix matrix, IList<double> thresholds, int row)
+        {
+            throw new NotImplementedException();
+        }
+        
+        private static int AnalyzeRowByColumn(Matrix matrix, IList<double> thresholds, int row)
         {
             throw new NotImplementedException();
         }
