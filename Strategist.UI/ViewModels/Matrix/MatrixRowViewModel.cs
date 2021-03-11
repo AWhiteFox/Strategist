@@ -12,6 +12,7 @@ namespace Strategist.UI.ViewModels
         private readonly int index;
 
         public string Header => string.Join(", ", matrix.RowHeaders[index]);
+        public IReadOnlyList<string> Tags => matrix.RowHeaders[index];
         public bool IsEnabled => matrix.RowsEnabled[index];
         public double this[int i] => matrix[i, index];
 
