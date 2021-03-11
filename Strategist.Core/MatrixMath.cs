@@ -5,31 +5,27 @@ namespace Strategist.Core
 {
     public static class MatrixMath
     {
+        private const string MatrixMustHaveRowCombinationsMessage = "Матрица должна содержать комбинации строк.";
+        
         public static int FindBestRow(Matrix matrix, IList<double> thresholds)
         {
-            if (matrix.HasCombinedRowHeaders)
-                return FindBestRowByColumn(matrix, thresholds);
-            if (matrix.HasCombinedColumnHeaders)
-                return FindBestRowByComparison(matrix, thresholds);
-            return FindBestRowByMinimax(matrix, thresholds);
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return matrix.HasCombinedColumnHeaders ? FindBestRowByColumn(matrix, thresholds) : FindBestRowByComparison(matrix, thresholds);
         }
 
         public static int ImproveRow(Matrix matrix, IList<double> thresholds, int row)
         {
             if (!matrix.HasCombinedRowHeaders)
-                throw new ArgumentException("Матрица должна содержать комбинации строк.");
-            if (matrix.HasCombinedColumnHeaders)
-                return ImproveRowByColumn(matrix, thresholds, row);
-            return ImproveRowByComparison(matrix, thresholds, row);
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return matrix.HasCombinedColumnHeaders ? ImproveRowByColumn(matrix, thresholds, row) : ImproveRowByComparison(matrix, thresholds, row);
         }
 
         public static int AnalyzeRow(Matrix matrix, IList<double> thresholds, int row)
         {
             if (!matrix.HasCombinedRowHeaders)
-                throw new ArgumentException("Матрица должна содержать комбинации строк.");
-            if (matrix.HasCombinedColumnHeaders)
-                return AnalyzeRowByColumn(matrix, thresholds, row);
-            return AnalyzeRowByComparison(matrix, thresholds, row);
+                throw new ArgumentException(MatrixMustHaveRowCombinationsMessage);
+            return matrix.HasCombinedColumnHeaders ? AnalyzeRowByColumn(matrix, thresholds, row) : AnalyzeRowByComparison(matrix, thresholds, row);
         }
         
         public static double[] GetColumnMaximums(Matrix matrix)
@@ -91,11 +87,6 @@ namespace Strategist.Core
             return medians;
         }
 
-        private static int FindBestRowByMinimax(Matrix matrix, IList<double> thresholds)
-        {
-            throw new NotImplementedException();
-        }
-        
         private static int FindBestRowByComparison(Matrix matrix, IList<double> thresholds)
         {
             int best = -1;
