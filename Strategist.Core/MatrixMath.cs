@@ -11,7 +11,16 @@ namespace Strategist.Core
                 return FindBestRowByColumn(matrix, thresholds);
             if (matrix.HasCombinedColumnHeaders)
                 return FindBestRowByComparison(matrix, thresholds);
-            return FindBestRowByMinMax(matrix, thresholds);
+            return FindBestRowByMinimax(matrix, thresholds);
+        }
+
+        public static int ImproveRow(Matrix matrix, IList<double> thresholds, int row)
+        {
+            if (!matrix.HasCombinedRowHeaders)
+                throw new ArgumentException("Матрица должна содержать комбинации строк.");
+            if (matrix.HasCombinedColumnHeaders)
+                return ImproveRowByColumn(matrix, thresholds, row);
+            return ImproveRowByComparison(matrix, thresholds, row);
         }
 
         public static double[] GetColumnMaximums(Matrix matrix)
@@ -73,7 +82,7 @@ namespace Strategist.Core
             return medians;
         }
 
-        private static int FindBestRowByMinMax(Matrix matrix, IList<double> thresholds)
+        private static int FindBestRowByMinimax(Matrix matrix, IList<double> thresholds)
         {
             throw new NotImplementedException();
         }
@@ -103,6 +112,16 @@ namespace Strategist.Core
         }
 
         private static int FindBestRowByColumn(Matrix matrix, IList<double> thresholds)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static int ImproveRowByComparison(Matrix matrix, IList<double> thresholds, int row)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static int ImproveRowByColumn(Matrix matrix, IList<double> thresholds, int row)
         {
             throw new NotImplementedException();
         }
