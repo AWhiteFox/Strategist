@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Strategist.Core;
 
 namespace Strategist.UI
 {
@@ -14,10 +15,10 @@ namespace Strategist.UI
         public bool MedianThresholdSelected => RbMedian.IsChecked.HasValue && RbMedian.IsChecked.Value;
         public bool CustomThresholdSelected => RbCustom.IsChecked.HasValue && RbCustom.IsChecked.Value;
 
-        public MainWindow()
+        public MainWindow(Matrix matrix)
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel(this);
+            DataContext = new MainWindowViewModel(this, matrix);
             InitializeDataTable();
         }
 
@@ -26,13 +27,8 @@ namespace Strategist.UI
             if (double.TryParse(TbCustomThreshold.Text.Replace('.', ','), out value) && 0.0 <= value && value <= 1.0) 
                 return true;
             if (!suppressErrorMessage)
-                ShowError("Неверный формат данных для критерия оценки");
+                MessageBoxHelper.Error("Неверный формат данных для критерия оценки");
             return false;
-        }
-
-        public void ShowMessage(string header, string content)
-        {
-            MessageBox.Show(content, header, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void InitializeDataTable()
@@ -54,7 +50,5 @@ namespace Strategist.UI
                 DataGrid.Columns.Add(col);
             }
         }
-
-        private void ShowError(string content) => MessageBox.Show(content, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 }

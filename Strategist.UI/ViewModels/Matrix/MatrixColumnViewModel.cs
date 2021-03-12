@@ -1,7 +1,6 @@
 ﻿using Strategist.Core;
 using Strategist.UI.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Strategist.UI.ViewModels
