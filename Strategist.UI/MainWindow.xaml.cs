@@ -6,29 +6,13 @@ using Strategist.Core;
 
 namespace Strategist.UI
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow
     {
-        public bool MaxThresholdSelected => RbMax.IsChecked.HasValue && RbMax.IsChecked.Value;
-        public bool MedianThresholdSelected => RbMedian.IsChecked.HasValue && RbMedian.IsChecked.Value;
-        public bool CustomThresholdSelected => RbCustom.IsChecked.HasValue && RbCustom.IsChecked.Value;
-
         public MainWindow(Matrix matrix)
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel(this, matrix);
+            DataContext = new MainWindowViewModel(matrix);
             InitializeDataTable();
-        }
-
-        public bool TryGetCustomThreshold(out double value, bool suppressErrorMessage = false)
-        {
-            if (double.TryParse(TbCustomThreshold.Text.Replace('.', ','), out value) && 0.0 <= value && value <= 1.0) 
-                return true;
-            if (!suppressErrorMessage)
-                MessageBoxHelper.Error("Неверный формат данных для критерия оценки");
-            return false;
         }
 
         private void InitializeDataTable()
