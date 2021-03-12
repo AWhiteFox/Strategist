@@ -9,6 +9,8 @@ namespace Strategist.Core.MatrixLoaders
 {
     public class MongoDBMatrixLoader : MatrixLoader
     {
+        private string connectionString;
+        private string databaseName;
         private MongoClient client;
         private IMongoDatabase database;
         private IMongoCollection<StrategyModel> counterStrategiesCollection;
@@ -23,11 +25,13 @@ namespace Strategist.Core.MatrixLoaders
         public MongoDBMatrixLoader(string connectionString, string databaseName)
         {
             MainMatrix = new Matrix();
-            GetDatabase(connectionString, databaseName);
+            this.connectionString = connectionString;
+            this.databaseName = databaseName;
         }
 
         public override Matrix Load()
         {
+            GetDatabase(connectionString, databaseName);
             return GenerateMatrix();
         }
 
@@ -41,6 +45,8 @@ namespace Strategist.Core.MatrixLoaders
 
         public void GetDatabase(string connectionString, string databaseName)
         {
+            this.connectionString = connectionString;
+            this.databaseName = databaseName;
             client = new MongoClient(connectionString);
             database = client.GetDatabase(databaseName);
             counterStrategiesCollection = database.GetCollection<StrategyModel>("counter_strategies");
