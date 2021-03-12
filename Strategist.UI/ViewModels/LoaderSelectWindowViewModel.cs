@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Strategist.Core;
-using Strategist.Core.MatrixLoaders;
+using Strategist.Loaders;
 
 namespace Strategist.UI.ViewModels
 {

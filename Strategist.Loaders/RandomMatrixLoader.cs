@@ -1,9 +1,10 @@
-﻿using Strategist.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Strategist.Core;
+using Strategist.Core.Extensions;
 
-namespace Strategist.Core.MatrixLoaders
+namespace Strategist.Loaders
 {
     public class RandomMatrixLoader : MatrixLoader
     {

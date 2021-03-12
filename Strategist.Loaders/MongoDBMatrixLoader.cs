@@ -3,9 +3,9 @@ using Strategist.Core.Extensions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using System.Linq;
+using Strategist.Core;
 
-namespace Strategist.Core.MatrixLoaders
+namespace Strategist.Loaders
 {
     public class MongoDBMatrixLoader : MatrixLoader
     {
