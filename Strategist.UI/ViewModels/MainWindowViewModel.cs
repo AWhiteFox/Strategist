@@ -15,10 +15,10 @@ namespace Strategist.UI.ViewModels
         public RelayCommand ImproveRowCommand { get; }
         public RelayCommand AnalyzeRowCommand { get; }
 
-        public MainWindowViewModel(MainWindow window)
+        public MainWindowViewModel(MainWindow window, Matrix matrix)
         {
             this.window = window;
-            Matrix = new MatrixViewModel();
+            Matrix = new MatrixViewModel(matrix);
 
             SwitchAllColumnTagsCommand = new RelayCommand(_ => Matrix.SwitchAllColumnTags());
             SwitchAllRowTagsCommand = new RelayCommand(_ => Matrix.SwitchAllRowTags());
