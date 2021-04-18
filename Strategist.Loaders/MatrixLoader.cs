@@ -1,4 +1,6 @@
-﻿namespace Strategist.Core
+﻿using Strategist.Core;
+
+namespace Strategist.Loaders
 {
     public abstract class MatrixLoader
     {
