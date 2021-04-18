@@ -7,7 +7,7 @@ namespace Strategist.Core
     public static class MatrixMath
     {
         private const string MatrixMustHaveRowCombinationsMessage = "Матрица должна содержать комбинации строк.";
-        private const string MatrixDoesNotHaveEnoughData = "Матрица не содержит достаточное количество данных.";
+        private const string MatrixDoesNotHaveEnoughDataMessage = "Матрица не содержит достаточное количество данных.";
         
         public static int FindBestRow(Matrix matrix, IList<double> thresholds)
         {
@@ -198,7 +198,7 @@ namespace Strategist.Core
         {
             int value = matrix.GetColumnIndex(matrix.ColumnTags.Keys.Where(x => matrix.ColumnTags[x]));
             if (value == -1)
-                throw new ArgumentException(MatrixDoesNotHaveEnoughData);
+                throw new ArgumentException(MatrixDoesNotHaveEnoughDataMessage);
             return value;
         }
 
@@ -206,7 +206,7 @@ namespace Strategist.Core
         {
             int value = matrix.GetRowIndex(matrix.RowTags.Keys.Where(x => matrix.RowTags[x]));
             if (value == -1)
-                throw new ArgumentException(MatrixDoesNotHaveEnoughData);
+                throw new ArgumentException(MatrixDoesNotHaveEnoughDataMessage);
             return value;
         }
     }
