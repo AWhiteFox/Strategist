@@ -72,9 +72,9 @@ namespace Strategist.UI.ViewModels
             return null;
         }
 
-        private MongoDBMatrixLoader GetMongoDbMatrixLoader()
+        private MongoDbMatrixLoader GetMongoDbMatrixLoader()
         {
-            return new MongoDBMatrixLoader(MongoDbConnectionString, MongoDbDatabaseName);
+            return new MongoDbMatrixLoader(MongoDbConnectionString, MongoDbDatabaseName);
         }
 
         private JsonMatrixLoader GetJsonMatrixLoader()

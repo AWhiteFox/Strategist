@@ -7,7 +7,7 @@ using Strategist.Core;
 
 namespace Strategist.Loaders
 {
-    public class MongoDBMatrixLoader : MatrixLoader
+    public class MongoDbMatrixLoader : MatrixLoader
     {
         private string connectionString;
         private string databaseName;
@@ -22,7 +22,7 @@ namespace Strategist.Loaders
 
         public Matrix MainMatrix { get; private set; }
 
-        public MongoDBMatrixLoader(string connectionString, string databaseName)
+        public MongoDbMatrixLoader(string connectionString, string databaseName)
         {
             MainMatrix = new Matrix();
             this.connectionString = connectionString;
@@ -59,25 +59,25 @@ namespace Strategist.Loaders
         private Matrix GenerateMatrix()
         {
             var namesStrategies = new string[strategies.Count];
-            var namesСounterStrategies = new string[counterStrategies.Count];
+            var namesCounterStrategies = new string[counterStrategies.Count];
 
             for (int i = 0; i < namesStrategies.Length; i++)
                 namesStrategies[i] = strategies[i].Name;
 
-            for (int i = 0; i < namesСounterStrategies.Length; i++)
-                namesСounterStrategies[i] = counterStrategies[i].Name;
+            for (int i = 0; i < namesCounterStrategies.Length; i++)
+                namesCounterStrategies[i] = counterStrategies[i].Name;
 
             var matrixStrategies = namesStrategies.Combinations();
-            var matrixСounterStrategies = namesСounterStrategies.Combinations();
+            var matrixCounterStrategies = namesCounterStrategies.Combinations();
 
             foreach (var row in matrixStrategies)
                 MainMatrix.AddRow(row);
 
-            foreach (var column in matrixСounterStrategies)
+            foreach (var column in matrixCounterStrategies)
                 MainMatrix.AddColumn(column);
 
             var fromProbabilitiesStrategies = new List<string>();
-            var fromProbabilitiesСounterStrategies = new List<string>();
+            var fromProbabilitiesCounterStrategies = new List<string>();
 
             for (int i = 0; i < probabilities.Count; i++)
             {
@@ -85,15 +85,15 @@ namespace Strategist.Loaders
                     fromProbabilitiesStrategies.Add(FindStrategyName(strategies, strategy));
 
                 foreach (var strategy in probabilities[i].CounterStrategies)
-                    fromProbabilitiesСounterStrategies.Add(FindStrategyName(counterStrategies, strategy));
+                    fromProbabilitiesCounterStrategies.Add(FindStrategyName(counterStrategies, strategy));
 
                 foreach (var row in matrixStrategies)
-                    foreach (var column in matrixСounterStrategies)
-                        if (new HashSet<string>(column).SetEquals(fromProbabilitiesСounterStrategies) && new HashSet<string>(row).SetEquals(fromProbabilitiesStrategies))
-                            MainMatrix[fromProbabilitiesСounterStrategies, fromProbabilitiesStrategies] = probabilities[i].Probability;
+                    foreach (var column in matrixCounterStrategies)
+                        if (new HashSet<string>(column).SetEquals(fromProbabilitiesCounterStrategies) && new HashSet<string>(row).SetEquals(fromProbabilitiesStrategies))
+                            MainMatrix[fromProbabilitiesCounterStrategies, fromProbabilitiesStrategies] = probabilities[i].Probability;
 
                 fromProbabilitiesStrategies.Clear();
-                fromProbabilitiesСounterStrategies.Clear();
+                fromProbabilitiesCounterStrategies.Clear();
             }
 
             return MainMatrix;
