@@ -7,24 +7,22 @@ namespace Strategist.UI.ViewModels
 {
     public class LoaderSelectWindowViewModel
     {
-        public bool RandomLoaderSelected { get; set; }
+        public bool RandomLoaderSelected { get; set; } = true;
         public bool MongoDbLoaderSelected { get; set; }
         public bool JsonLoaderSelected { get; set; }
         public bool CsvLoaderSelected { get; set; }
 
-        public string RandomStrategyCount { get; set; }
-        public string RandomCounterStrategyCount { get; set; }
+        public string RandomStrategyCount { get; set; } = "4";
+        public string RandomCounterStrategyCount { get; set; } = "6";
         public string MongoDbConnectionString { get; set; }
         public string MongoDbDatabaseName { get; set; }
-        public string CsvSeparator { get; set; }
+        public string CsvValueSeparator { get; set; } = ";";
+        public string CsvHeaderSeparator { get; set; } = "|";
 
         public RelayCommand LoadMatrixCommand { get; }
         
         public LoaderSelectWindowViewModel()
         {
-            RandomLoaderSelected = true;
-            RandomStrategyCount = "4";
-            RandomCounterStrategyCount = "6";
             LoadMatrixCommand = new RelayCommand(_ => OnLoadMatrixCommand());
         }
 
@@ -90,13 +88,19 @@ namespace Strategist.UI.ViewModels
         
         private CsvMatrixLoader GetCsvMatrixLoader()
         {
+            if (CsvValueSeparator.Length == 0 || CsvHeaderSeparator.Length == 0)
+            {
+                MessageBoxHelper.Error("Не указан символ-разделитель.");
+                return null;
+            }
+            
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
                 DefaultExt = ".csv", 
                 Filter = "CSV Files|*.csv"
             };
             bool? result = dlg.ShowDialog();
-            return result.HasValue && result.Value ? new CsvMatrixLoader(dlg.FileName, CsvSeparator) : null;
+            return result.HasValue && result.Value ? new CsvMatrixLoader(dlg.FileName, CsvValueSeparator[0], CsvHeaderSeparator[0]) : null;
         }
     }
 }
