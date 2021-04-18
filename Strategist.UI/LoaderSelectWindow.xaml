@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:viewModels="clr-namespace:Strategist.UI.ViewModels"
         mc:Ignorable="d"
-        Title="Strategist" Height="300" Width="600" 
+        Title="Выберите способ загрузки данных" Height="280" Width="600" 
         MinHeight="{Binding Height, RelativeSource={RelativeSource Self}}"
         MaxHeight="{Binding MinHeight, RelativeSource={RelativeSource Self}}"
         d:DataContext="{d:DesignInstance viewModels:LoaderSelectWindowViewModel}">
@@ -17,59 +17,62 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Margin="15">
-            <Label Margin="0 0 0 10">Выберите способ загрузки данных в программу:</Label>
-            
-            <RadioButton x:Name="RbRandom" Margin="0 5" Content="Случайные данные" 
-                         IsChecked="{Binding RandomLoaderSelected}"/>
-            <Grid Visibility="{Binding IsChecked, ElementName=RbRandom, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="WhiteSmoke" BorderBrush="DimGray" BorderThickness="1" Margin="10 10 10 0">
+            <StackPanel Margin="15">
+                <RadioButton x:Name="RbRandom" Margin="0 0 0 5" Content="Случайные данные" 
+                             IsChecked="{Binding RandomLoaderSelected}"/>
+                <Grid Visibility="{Binding IsChecked, ElementName=RbRandom, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      Margin="0 0 0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Label Grid.Row="0" Grid.Column="0">Количество стратегий:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding RandomStrategyCount}"/>
+                    <Label Grid.Row="1" Grid.Column="0">Количество контрстратегий:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding RandomCounterStrategyCount}"/>
+                </Grid>
                 
-                <Label Grid.Row="0" Grid.Column="0">Количество стратегий:</Label>
-                <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding RandomStrategyCount}"/>
-                <Label Grid.Row="1" Grid.Column="0">Количество контрстратегий:</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding RandomCounterStrategyCount}"/>
-            </Grid>
-            
-            <RadioButton x:Name="RbMongo" Margin="0 5" Content="Загрузка из MongoDB"
-                         IsChecked="{Binding MongoDbLoaderSelected}"/>
-            <Grid Visibility="{Binding IsChecked, ElementName=RbMongo, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <RadioButton x:Name="RbMongo" Margin="0 5" Content="Загрузка из MongoDB"
+                             IsChecked="{Binding MongoDbLoaderSelected}"/>
+                <Grid Visibility="{Binding IsChecked, ElementName=RbMongo, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      Margin="0 0 0 5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Label Grid.Row="0" Grid.Column="0">Строка подключения:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding MongoDbConnectionString}"/>
+                    <Label Grid.Row="1" Grid.Column="0">Имя базы данных:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding MongoDbDatabaseName}"/>
+                </Grid>
                 
-                <Label Grid.Row="0" Grid.Column="0">Строка подключения:</Label>
-                <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding MongoDbConnectionString}"/>
-                <Label Grid.Row="1" Grid.Column="0">Имя базы данных:</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding MongoDbDatabaseName}"/>
-            </Grid>
-            
-            <RadioButton x:Name="RbJson" Margin="0 5" Content="Загрузка из файла JSON"
-                         IsChecked="{Binding JsonLoaderSelected}"/>
-            
-            <RadioButton x:Name="RbCsv" Margin="0 5" Content="Загрузка из файла CSV"
-                         IsChecked="{Binding CsvLoaderSelected}"/>
-            <StackPanel Visibility="{Binding IsChecked, ElementName=RbCsv, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Orientation="Horizontal">
+                <RadioButton x:Name="RbJson" Margin="0 5" Content="Загрузка из файла JSON"
+                             IsChecked="{Binding JsonLoaderSelected}"/>
                 
-                <Label>Разделитель колонок:</Label>
-                <TextBox Margin="1" Width="25" MaxLength="1" Text="{Binding CsvValueSeparator}"/>
-                <Label Margin="10 0 0 0">Разделитель стратегий:</Label>
-                <TextBox Margin="1" Width="25" MaxLength="1" Text="{Binding CsvHeaderSeparator}"/>
+                <RadioButton x:Name="RbCsv" Margin="0 5" Content="Загрузка из файла CSV"
+                             IsChecked="{Binding CsvLoaderSelected}"/>
+                <StackPanel Visibility="{Binding IsChecked, ElementName=RbCsv, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Orientation="Horizontal" Margin="0 0 0 5">
+                    
+                    <Label>Разделитель колонок:</Label>
+                    <TextBox Margin="1" Width="25" MaxLength="1" Text="{Binding CsvValueSeparator}"/>
+                    <Label Margin="10 0 0 0">Разделитель стратегий:</Label>
+                    <TextBox Margin="1" Width="25" MaxLength="1" Text="{Binding CsvHeaderSeparator}"/>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Border>
+        
         <Button Grid.Row="1" Content="Продолжить" Padding="5" Margin="10" VerticalAlignment="Bottom" 
                 Command="{Binding LoadMatrixCommand}"/>
     </Grid>
