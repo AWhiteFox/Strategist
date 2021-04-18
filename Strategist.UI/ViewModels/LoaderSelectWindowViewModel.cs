@@ -9,11 +9,14 @@ namespace Strategist.UI.ViewModels
     {
         public bool RandomLoaderSelected { get; set; }
         public bool MongoDbLoaderSelected { get; set; }
+        public bool JsonLoaderSelected { get; set; }
+        public bool CsvLoaderSelected { get; set; }
 
         public string RandomStrategyCount { get; set; }
         public string RandomCounterStrategyCount { get; set; }
         public string MongoDbConnectionString { get; set; }
         public string MongoDbDatabaseName { get; set; }
+        public string CsvSeparator { get; set; }
 
         public RelayCommand LoadMatrixCommand { get; }
         
@@ -32,6 +35,10 @@ namespace Strategist.UI.ViewModels
                 loader = GetRandomMatrixLoader();
             else if (MongoDbLoaderSelected)
                 loader = GetMongoDbMatrixLoader();
+            else if (JsonLoaderSelected)
+                loader = GetJsonMatrixLoader();
+            else if (CsvLoaderSelected)
+                loader = GetCsvMatrixLoader();
             else
                 return;
             if (loader is null)
@@ -54,7 +61,7 @@ namespace Strategist.UI.ViewModels
             Application.Current.MainWindow.Show();
         }
 
-        private MatrixLoader GetRandomMatrixLoader()
+        private RandomMatrixLoader GetRandomMatrixLoader()
         {
             if (int.TryParse(RandomStrategyCount, out int height) && int.TryParse(RandomCounterStrategyCount, out int width))
             {
@@ -65,9 +72,31 @@ namespace Strategist.UI.ViewModels
             return null;
         }
 
-        private MatrixLoader GetMongoDbMatrixLoader()
+        private MongoDBMatrixLoader GetMongoDbMatrixLoader()
         {
             return new MongoDBMatrixLoader(MongoDbConnectionString, MongoDbDatabaseName);
+        }
+
+        private JsonMatrixLoader GetJsonMatrixLoader()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".json", 
+                Filter = "JSON Files|*.json"
+            };
+            bool? result = dlg.ShowDialog();
+            return result.HasValue && result.Value ? new JsonMatrixLoader(dlg.FileName) : null;
+        }
+        
+        private CsvMatrixLoader GetCsvMatrixLoader()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".csv", 
+                Filter = "CSV Files|*.csv"
+            };
+            bool? result = dlg.ShowDialog();
+            return result.HasValue && result.Value ? new CsvMatrixLoader(dlg.FileName, CsvSeparator) : null;
         }
     }
 }

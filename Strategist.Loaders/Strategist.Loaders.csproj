@@ -104,6 +104,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvMatrixLoader.cs" />
+    <Compile Include="JsonMatrixLoader.cs" />
     <Compile Include="MongoDBMatrixLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomMatrixLoader.cs" />

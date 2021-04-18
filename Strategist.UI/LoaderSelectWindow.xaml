@@ -36,7 +36,6 @@
                 <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding RandomStrategyCount}"/>
                 <Label Grid.Row="1" Grid.Column="0">Количество контрстратегий:</Label>
                 <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding RandomCounterStrategyCount}"/>
-                
             </Grid>
             
             <RadioButton x:Name="RbMongo" Margin="0 5" Content="Загрузка из MongoDB"
@@ -54,8 +53,25 @@
                 <Label Grid.Row="0" Grid.Column="0">Строка подключения:</Label>
                 <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding MongoDbConnectionString}"/>
                 <Label Grid.Row="1" Grid.Column="0">Имя базы данных:</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding MongoDbDatabaseName}"/>  
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="1" Text="{Binding MongoDbDatabaseName}"/>
+            </Grid>
+            
+            <RadioButton x:Name="RbJson" Margin="0 5" Content="Загрузка из файла JSON"
+                         IsChecked="{Binding JsonLoaderSelected}"/>
+            
+            <RadioButton x:Name="RbCsv" Margin="0 5" Content="Загрузка из MongoDB"
+                         IsChecked="{Binding CsvLoaderSelected}"/>
+            <Grid Visibility="{Binding IsChecked, ElementName=RbCsv, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 
+                <Label Grid.Row="0" Grid.Column="0">Разделитель:</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="1" Text="{Binding CsvSeparator}"/>
             </Grid>
         </StackPanel>
         <Button Grid.Row="1" Content="Загрузить" Padding="5" Margin="10" VerticalAlignment="Bottom" 
